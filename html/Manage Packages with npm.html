@@ -1,0 +1,256 @@
+<h1 id="manage-packages-with-npm">Manage Packages with npm</h1>
+<p><code>npm</code> (Node Package Manager) is a package manager for JavaScript particularly associated with Node.js. It is a command line client and an on-line database for packages called the <code>npm registry</code>. It provides similar feature to the PEAR and CPAN of PHP and Perl but aimed to do the job properly. It therefore contains features for creating and publishing packages as well as install etc packages from the registry.</p>
+<p>The fcc waypoint delegates to the Node School <a href="https://github.com/npm/how-to-npm">How To npm</a> tutorial.</p>
+<p>First it suggests you sign up with Cloud9 and create yourself a 'blank' container. This gives you a container with version 6.11.2 of <code>node.js</code> and 3.10.10 of <code>npm</code>.</p>
+<p>Note: do not create a 'node.js' container. This comes with what you need but also with an example application that will confuse you as you progress through the tutorial and will eventually confuse <code>npm</code> into letting you go no further.</p>
+<p>A blank CodeAnywhere has neither installed and a lot of other stuff is missing so choose the Node.js Ubuntu 14.04 stack option. This give you version 8.4.0 of node.js and 5.3.0 of npm.</p>
+<p>Note: the Cloud9 and CodeAnywhere OS is old ... it is Ubuntu Trusty LTS from 2014. If you were to install from the Ubuntu repositories you would get version 0.10.25 of of node.js and 1.3.10 of npm.</p>
+<p>Cloud9 was 123 'security' updates short and CodeAnywhere 146. Upgrading eats into your disk quota.</p>
+<hr />
+<p>The tutorial, however briefly, probably covers more ground that you will need.</p>
+<p>It has a naff interface (as do all the other Node School tutorials). Maximise the small viewing area at the bottom of the Cloud9 virtual desktop <strong>before</strong> use.</p>
+<p>To install the tutorial:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ npm <span class="kw">install</span> -g how-to-npm</code></pre>
+<p>To run it:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ how-to-npm</code></pre>
+<p>After doing each 'challenge' check your work with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ how-to-npm verify</code></pre>
+<p>On Cloud9 the choice of colours means you cannot actually see the tutorial instructions. No such problem on CodeAnywhere. So I worked through the tutorial(s) on CodeAnywhere and Cloud9 in parallel.</p>
+<h4 id="install-npm">Install npm</h4>
+<p>You may use the chicken and egg principle to deduce that <code>npm</code> is already installed but is it up to date ?</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ how-to-npm                    <span class="co"># start the exercise</span>
+$ how-to-npm verify             <span class="co"># check `npm` version</span></code></pre>
+<p>For CodeAnywhere, I had 5.3.0 but 5.6.0 was more recent. So</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">install</span> -g npm
+$ how-to-npm verify             <span class="co"># check `npm` version</span></code></pre>
+<p>On Cloud9, I had 3.10.10 but after upgrading <code>npm</code>, attempting to check the version crashed. In essence it was necessary to create a new container and start again.</p>
+<p>Do not attempt to upgrade <code>npm</code> but skip the exercise with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ how-to-npm verify skip        <span class="co"># `npm` cannot be upgraded safely</span></code></pre>
+<h4 id="dev-environment">Dev Environment</h4>
+<p>This is the directory in which, over time, a project is developed.</p>
+<p>The instructions say to create a new directory and <code>cd</code> into it. This is not necessary.</p>
+<p>On the first pass, I did. Eventually I ran into trouble because I was, in effect, ignoring the advice in step 12 of the the fcc instructions to always be in my project's &quot;workspace&quot; directory.</p>
+<p>Run <code>npm init</code> and press return to accept the default for each question. This creates a <code>package.json</code> file and so sets up the development environment.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm init</code></pre>
+<pre class="sourceCode json"><code class="sourceCode json">{
+  <span class="dt">&quot;name&quot;</span>: <span class="st">&quot;workspace&quot;</span>,
+  <span class="dt">&quot;version&quot;</span>: <span class="st">&quot;1.0.0&quot;</span>,
+  <span class="dt">&quot;main&quot;</span>: <span class="st">&quot;index.js&quot;</span>,
+  <span class="dt">&quot;scripts&quot;</span>: {
+    <span class="dt">&quot;test&quot;</span>: <span class="st">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+  },
+  <span class="dt">&quot;author&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;license&quot;</span>: <span class="st">&quot;ISC&quot;</span>,
+  <span class="dt">&quot;description&quot;</span>: <span class="st">&quot;&quot;</span>,
+}</code></pre>
+<h4 id="login">Login</h4>
+<p>This steps is mock: nothing really happens.</p>
+<p>It mocks your creation of a user id on <code>npmjs.com</code> so that you can publish <code>node.js</code> modules that others can use.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm adduser
+Username: atelespaniscus        <span class="co"># must be lower case</span>
+Password:                       <span class="co"># none of your business</span>
+Email: <span class="kw">(</span>this IS public<span class="kw">)</span>         <span class="co"># ouch - too much spam</span></code></pre>
+<p>The mocking does not save this information anywhere but, in real life, I suspect it may do.</p>
+<h4 id="start-a-project">Start A Project</h4>
+<p>This is about using <code>npm init</code> to change or add information in <code>package.json</code>. What that has to do with a project is not explained.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm init --scope=ateles</code></pre>
+<p>This adds <code>scope</code> (whatever that means in this context) to the <code>name</code> of the project. It also walks you through all the current settings. This include some not seen before, like <code>repository</code>.</p>
+<pre class="sourceCode json"><code class="sourceCode json">{
+  <span class="dt">&quot;name&quot;</span>: <span class="st">&quot;@ateles/workspace&quot;</span>,
+  <span class="dt">&quot;version&quot;</span>: <span class="st">&quot;1.0.0&quot;</span>,
+  <span class="dt">&quot;main&quot;</span>: <span class="st">&quot;index.js&quot;</span>,
+  <span class="dt">&quot;scripts&quot;</span>: {
+    <span class="dt">&quot;test&quot;</span>: <span class="st">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+  },
+  <span class="dt">&quot;author&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;license&quot;</span>: <span class="st">&quot;ISC&quot;</span>,
+  <span class="dt">&quot;repository&quot;</span>: {
+    <span class="dt">&quot;type&quot;</span>: <span class="st">&quot;git&quot;</span>
+    <span class="st">&quot;url&quot;</span><span class="er">:</span> <span class="st">&quot;git@github/ateles/nodeschool.git&quot;</span>
+  },
+  <span class="dt">&quot;description&quot;</span>: <span class="st">&quot;&quot;</span>,
+}</code></pre>
+<p>It is also common practice to make the current directory the local clone of the repository:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ git init</code></pre>
+<h4 id="install-a-module">Install A Module</h4>
+<p>The most common use of <code>npm</code> is to install packages from the 'registry' that your application / project / whatever depends on. These are called dependencies although I am sure this is not right the around.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">install</span> <span class="st">&#39;@linclark/pkg&#39;</span>            <span class="co"># for tutorial purposes only</span></code></pre>
+<p>This installs the module <code>locally</code> (I guess local to this <code>project</code>, as opposed to globally (available to all projects of all users on this machine). It also adds information to <code>package.json</code> that records the dependency. Presumably this helps either with package creation or later with installation.</p>
+<h4 id="listing-dependencies">Listing Dependencies</h4>
+<p>The (local) dependencies you have created for this <code>project</code> may be listed.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">ls</span></code></pre>
+<p>With the older, Cloud9, <code>npm</code> the module installed but this is not recorded in <code>package.json</code>. The <code>npm ls</code> command lists the module as 'extraneous'. This is to support trial installation because node development is guess work.</p>
+<p>To install a package 'permanently', install it with the <code>--save</code> flag:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">install</span> <span class="st">&#39;@linclark/pkg&#39;</span> --save</code></pre>
+<p>or, since the 'save' is just an update to <code>package.json</code>, use an editor.</p>
+<pre class="sourceCode json"><code class="sourceCode json">{
+  <span class="dt">&quot;name&quot;</span>: <span class="st">&quot;@ateles/workspace&quot;</span>,
+  <span class="dt">&quot;version&quot;</span>: <span class="st">&quot;1.0.0&quot;</span>,
+  <span class="dt">&quot;main&quot;</span>: <span class="st">&quot;index.js&quot;</span>,
+  <span class="dt">&quot;scripts&quot;</span>: {
+    <span class="dt">&quot;test&quot;</span>: <span class="st">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+  },
+  <span class="dt">&quot;author&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;license&quot;</span>: <span class="st">&quot;ISC&quot;</span>,
+  <span class="dt">&quot;repository&quot;</span>: {
+    <span class="dt">&quot;type&quot;</span>: <span class="st">&quot;git&quot;</span>
+    <span class="st">&quot;url&quot;</span><span class="er">:</span> <span class="st">&quot;git@github/ateles/nodeschool.git&quot;</span>
+  },
+  <span class="dt">&quot;description&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;dependencies&quot;</span>: {
+    <span class="dt">&quot;@linclark/pkg&quot;</span>: <span class="st">&quot;^1.0.2&quot;</span>
+  }
+}</code></pre>
+<h4 id="npm-test">npm Test</h4>
+<p>You can use <code>npm</code> as a (simple) test runner by exploiting its <code>script</code> property. The test, I guess, is a sanity check rather than something exhaustive.</p>
+<p>The default, by design, always fails:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">test</span>
+<span class="kw">&gt;</span> @ateles/workspace@1.0.0 <span class="kw">test</span> /home/cabox/workspace
+<span class="kw">&gt;</span> node test.js
+<span class="kw">&gt;</span> <span class="kw">echo</span> <span class="st">&#39;Error: no test specified&#39;</span>
+
+Error: no <span class="kw">test</span> specified</code></pre>
+<p>To add a test, edit <code>package.json</code>. The test script is in the form of a command to be run from the shell.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">touch</span> test.js
+$ <span class="kw">nano</span> package.json
+$ npm <span class="kw">test</span>
+
+<span class="kw">&gt;</span> @ateles/workspace@1.0.0 <span class="kw">test</span> /home/cabox/workspace
+<span class="kw">&gt;</span> node test.js</code></pre>
+<p>Note: the syntax suggests you can add other scripts and run them by name with <code>npm</code>.</p>
+<pre class="sourceCode json"><code class="sourceCode json">{
+  <span class="dt">&quot;name&quot;</span>: <span class="st">&quot;@ateles/workspace&quot;</span>,
+  <span class="dt">&quot;version&quot;</span>: <span class="st">&quot;1.0.0&quot;</span>,
+  <span class="dt">&quot;main&quot;</span>: <span class="st">&quot;index.js&quot;</span>,
+  <span class="dt">&quot;scripts&quot;</span>: {
+    <span class="dt">&quot;test&quot;</span>: <span class="st">&quot;node test.js&quot;</span>
+  },
+  <span class="dt">&quot;author&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;license&quot;</span>: <span class="st">&quot;ISC&quot;</span>,
+  <span class="dt">&quot;repository&quot;</span>: {
+    <span class="dt">&quot;type&quot;</span>: <span class="st">&quot;git&quot;</span>
+    <span class="st">&quot;url&quot;</span><span class="er">:</span> <span class="st">&quot;git@github/ateles/nodeschool.git&quot;</span>
+  },
+  <span class="dt">&quot;description&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;dependencies&quot;</span>: {
+    <span class="dt">&quot;@linclark/pkg&quot;</span>: <span class="st">&quot;^1.0.2&quot;</span>
+  }
+}</code></pre>
+<p>There is a documentation link to treasure: <a href="https://docs.npmjs.com/misc/scripts">https://docs.npmjs.com/misc/scripts</a>.</p>
+<h4 id="package-niceties">Package Niceties</h4>
+<p>Apparently a good package should have:</p>
+<ul>
+<li>a description</li>
+<li>a repository field</li>
+<li>a README file</li>
+</ul>
+<p>The first two can go into <code>package.json</code> so that <code>npm install</code> can complain when they are not.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cat</span> <span class="kw">&gt;</span> README.md
+<span class="co"># The last word in software</span>
+^D</code></pre>
+<pre class="sourceCode json"><code class="sourceCode json">{
+  <span class="dt">&quot;name&quot;</span>: <span class="st">&quot;@ateles/workspace&quot;</span>,
+  <span class="dt">&quot;version&quot;</span>: <span class="st">&quot;1.0.0&quot;</span>,
+  <span class="dt">&quot;main&quot;</span>: <span class="st">&quot;index.js&quot;</span>,
+  <span class="dt">&quot;scripts&quot;</span>: {
+    <span class="dt">&quot;test&quot;</span>: <span class="st">&quot;node test.js&quot;</span>
+  },
+  <span class="dt">&quot;author&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;license&quot;</span>: <span class="st">&quot;ISC&quot;</span>,
+  <span class="dt">&quot;description&quot;</span>: <span class="st">&quot;The first node&quot;</span>,
+  <span class="dt">&quot;repository&quot;</span>: {
+    <span class="dt">&quot;type&quot;</span>: <span class="st">&quot;git&quot;</span>
+    <span class="st">&quot;url&quot;</span><span class="er">:</span> <span class="st">&quot;git@github/ateles/nodeschool.git&quot;</span>
+  },
+  <span class="dt">&quot;dependencies&quot;</span>: {
+    <span class="dt">&quot;@linclark/pkg&quot;</span>: <span class="st">&quot;^1.0.2&quot;</span>
+  }
+}</code></pre>
+<p>The exercise verification step will tell you to look sharp whether you create a read me or not. Probably another case of the tutorial being every so slightly obsolescent.</p>
+<h4 id="publish">Publish</h4>
+<p>Publishing is pushing your application / project / whatever to the global repository everyone installs packages from.</p>
+<pre><code>npm publish
+npm view &#39;@ateles/workspace&#39;</code></pre>
+<p>During the first pass, the second command hung for a while before giving 'connection' refused on 127.0.0.1:15443.</p>
+<p>During the second pass, this worked under both Cloud9 and CodeAnywhere. It even knew about the read me.</p>
+<h4 id="version">Version</h4>
+<p>Node uses <a href="http://semver.org">semantic versioning</a>. You cannot publish a new version of your project / whatever without 'bumping' the version number.</p>
+<p>There is an <code>npm version</code> command that will bump the version number for you and check your code into <code>git</code>.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm version 1.0.1
+v1.0.1
+$ <span class="kw">cat</span> package.json</code></pre>
+<pre class="sourceCode json"><code class="sourceCode json">{
+  <span class="dt">&quot;name&quot;</span>: <span class="st">&quot;@ateles/workspace&quot;</span>,
+  <span class="dt">&quot;version&quot;</span>: <span class="st">&quot;1.0.1&quot;</span>,
+  <span class="dt">&quot;main&quot;</span>: <span class="st">&quot;index.js&quot;</span>,
+  <span class="dt">&quot;scripts&quot;</span>: {
+    <span class="dt">&quot;test&quot;</span>: <span class="st">&quot;node test.js&quot;</span>
+  },
+  <span class="dt">&quot;author&quot;</span>: <span class="st">&quot;&quot;</span>,
+  <span class="dt">&quot;license&quot;</span>: <span class="st">&quot;ISC&quot;</span>,
+  <span class="dt">&quot;description&quot;</span>: <span class="st">&quot;The first node&quot;</span>,
+  <span class="dt">&quot;repository&quot;</span>: <span class="st">&quot;https://nowhere&quot;</span>,
+  <span class="dt">&quot;dependencies&quot;</span>: {
+    <span class="dt">&quot;@linclark/pkg&quot;</span>: <span class="st">&quot;^1.0.2&quot;</span>
+  }
+}</code></pre>
+<p>This example sets the version number. You can increment the major, minor or patch number. For more information:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">help</span> version</code></pre>
+<p>Use this trick to find out more about other <code>npm</code> commands.</p>
+<p>The interaction with <code>git</code> is not as clever as you might think. The <code>npm</code> command will run <code>git tag</code>, not <code>git commit</code>. The example above tags the empty <code>git</code> clone: nothing had been checked in and nothing still is.</p>
+<h4 id="publish-again">Publish Again</h4>
+<p>Now that the version number has been bumped, it is possible to publish a new version of the package.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">npm publish</code></pre>
+<h4 id="dist-tag">Dist Tag</h4>
+<p>By default, each new publication is labelled (or tagged) 'latest'. You can add/rm/list tags with the <code>npm dist-tag</code> command.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm dist-tag <span class="kw">ls</span>
+$ npm dist-tag add <span class="st">&#39;@ateles/workspace@1.0.1&#39;</span> beta
+$ npm dist-tag <span class="kw">ls</span></code></pre>
+<p>A publication / whatever can have more than one label so you might want to move 'latest' when that it not pertinent as 'latest' is what gets installed.</p>
+<p>I did not understand the remarks about 'next'.</p>
+<h4 id="dist-tag-removal">Dist Tag Removal</h4>
+<p>You can delete any tag except 'latest': you can move 'latest' by adding it somewhere else:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm dist-tag <span class="kw">ls</span>
+beta: 1.0.1
+latest: 1.0.1</code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm dist-tag add <span class="st">&#39;@ateles/workspace@1.0.0&#39;</span> latest
++latest: @ateles/workspace@1.0.0
+<span class="ot">$npm</span> dist-tag <span class="kw">ls</span>
+beta: 1.0.1
+latest: 1.0.0</code></pre>
+<p>and since each tag occurs only once you do not need a version number to delete it:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm dist-tag <span class="kw">rm</span> <span class="st">&#39;@ateles/workspace&#39;</span> beta
+-beta: @ateles/workspace@1.0.1
+$ npm dist-tag <span class="kw">ls</span>
+latest: 1.0.0</code></pre>
+<h4 id="outdated">Outdated</h4>
+<p>When the author of a package on which your whatever depends bumps their version number, you need to respond.</p>
+<p>To find out if any of the packages on which we depend are out-of-date:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm outdated
+Package        Current  Wanted  Latest  Location
+@linclark/pkg    1.0.2   1.0.3   1.0.3  @ateles/workspace</code></pre>
+<p>OK, but what does the tutorial mean by 'compatible' ?</p>
+<h4 id="update">Update</h4>
+<p>You can update a package that you know is out of date with <code>npm install</code> package. Alternatively you can ensure all packages are up to date without even knowing which are out-of-date beforehand with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">npm update</code></pre>
+<p>The lazy update everything.</p>
+<h4 id="rm">Rm</h4>
+<p>What has been installed can be removed.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ npm <span class="kw">ls</span>
+@ateles/workspace@1.0.1 /home/cabox/workspace
+ -- @linclark/pkg@1.0.3
+$ npm <span class="kw">rm</span> <span class="st">&#39;@linclark/pkg&#39;</span>
+removed 1 package</code></pre>
+<p>The newer version of <code>npm</code> in CodeAnywhere does not need the <code>--save</code> option to remove the dependency from <code>package.json</code>. The older version in <code>Cloud9</code> does.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ how-to-npm verify
+You removed the files, but not the entries <span class="kw">in</span> package.json
+$ npm <span class="kw">rm</span> <span class="st">&#39;@linclark/pkg&#39;</span> --save
+$ how-to-npm verify</code></pre>
+<h4 id="finale">Finale</h4>
+<p>There is a lot more:</p>
+<ul>
+<li>splitting a larger app into several modules</li>
+<li>sharing private code within a team using scoped modules</li>
+<li>other <code>npm</code> commands such as <code>edit</code>, <code>bugs</code>, <code>explore</code> ...</li>
+</ul>
+<p>Start at <a href="https://npmjs.com">https://npmjs.com</a>.</p>
