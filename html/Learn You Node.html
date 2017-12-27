@@ -1,0 +1,338 @@
+<h1 id="learn-you-mode">Learn You Mode</h1>
+<p>Node.js is a JavaScript run-time environment for server-side JavaScript code: historically, JavaScript was used client-side using the JavaScript engine in a browser. Node.js allows the server to produce dynamic web page content before a web-page is sent to the browser client. It is a foundation of the &quot;JavaScript everywhere&quot; paradigm.</p>
+<p>The fcc programme delegates to the Node School <a href="https://github.com/workshopper/learnyounode">Learn You Node</a> tutorial. It is split over over three fcc waypoints:</p>
+<ul>
+<li>Start a Nodejs Server (exercise 1-7)</li>
+<li>Continue working with Nodejs Servers (exercises 8-10)</li>
+<li>Finish working with Nodejs Servers (exercises 11-13)</li>
+</ul>
+<p>On Cloud9, I recommend using a 'blank', not a 'node.js' container.</p>
+<hr />
+<p>I thought this tutorial was good. It illustrates both the power of node.js and the basic patterns on which (I guess) the great majority of servers are based. The notes below, as they stand, rather assume I remember rather more than I did.</p>
+<p>Each exercise has an 'official' solution: study these as they offer further insight.</p>
+<p>In your container, the <code>learnyounode</code> module is installed under:</p>
+<pre><code>$HOME/.nvm/versions/node/vx.y.z/lib/node_modules/learnyounode</code></pre>
+<p>Among other things, here you will find:</p>
+<ul>
+<li>node_apidoc/ - a directory with API documentation for all modules used in the tutorial</li>
+<li>exercises/ - a directory with a sub-directory for each exercise of the tutorial and in those:
+<ul>
+<li>problem.md - the text describing the exercise (in markdown format)</li>
+<li>solution/solution.js - the 'official' solution</li>
+</ul></li>
+</ul>
+<p>What you do not have in your container is a browser with which to examine the API documentation. It may be simplest to clone the tutorial's repository into your local machine and browse them there.</p>
+<p>The tutorial has the same naff interface as all the other Node School tutorials. Maximise the small viewing area at the bottom of the Cloud9 virtual desktop before use.</p>
+<p>To install the tutorial:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ npm <span class="kw">install</span> -g learnyounode</code></pre>
+<p>To run it:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ learnyounode</code></pre>
+<p>After doing each 'challenge' check your work with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ learnyounode verify</code></pre>
+<p>On Cloud9 the choice of colours means you cannot actually see the tutorial instructions. No such problem on CodeAnywhere. So I worked through the tutorial(s) on CodeAnywhere and Cloud9 in parallel.</p>
+<p>Under CodeAnywhere, the final three exercises failed because the client part of the test program was timing out after 500ms. Increase this to 1000ms and the verification should work. The file to change is <code>exercise.js</code> in the pertinent exercise directory under the learnyounode module directory (see above). E.g.</p>
+<pre><code>/home/cabox/.nvm/versions/node/v8.4.0/lib/node_modules/learnyounode/http_file_server/exercise.js</code></pre>
+<h2 id="hello-world">Hello World !</h2>
+<p>This exercise writes &quot;HELLO WORLD&quot; to the console (stdout). When you run <code>node</code> from the command line, the output is to the terminal window.</p>
+<pre class="js"><code>    console.log(&quot;HELLO WORLD&quot;);</code></pre>
+<h2 id="baby-steps">Baby Steps</h2>
+<p>This exercise prints the sum of its command line arguments.</p>
+<pre class="js"><code>    const sum = (accumulator, currentValue) =&gt; accumulator + Number(currentValue);
+
+    console.log(process.argv.slice(2).reduce(sum, 0));</code></pre>
+<p>This is using the new (=&gt;) syntax.</p>
+<h2 id="my-first-io">My First I/O !</h2>
+<p>This exercise counts the number of lines in a file. The file pathname is a command line parameter.</p>
+<p>To all intents and purposes, the hints tell you what to write.</p>
+<pre class="js"><code>    var fs = require(&#39;fs&#39;);
+
+    var buffy = fs.readFileSync(process.argv[2]);
+
+    console.log(buffy.toString().split(&#39;\n&#39;).length - 1);</code></pre>
+<p>Note: the length method returns the number of elements in an array. Splitting the file into an array of lines does the counting for us.</p>
+<p>Once you have passed the test it suggests that:</p>
+<pre class="js"><code>    fs.readFileSync(process.argv[2], &#39;utf8&#39;).split(&#39;\n&#39;).length - 1</code></pre>
+<p>tells 'fs' to read characters so that you do not need to convert.</p>
+<p>This exercises uses 'synchronous' (aka 'blocking') i/o. In <code>node</code> it is normal to use 'asynchronous' i/o. In fact, any and all requests are usually 'asynchronous'. That is the point.</p>
+<h2 id="my-first-async-io">My First Async I/O !</h2>
+<p>This exercise is the same as the last exercise except that is uses asynchronous i/o and hence a callback function. Asynchronous i/o is the Node.js way.</p>
+<pre class="js"><code>    var fs = require(&#39;fs&#39;);
+
+    fs.readFile(process.argv[2], &#39;utf8&#39;,
+        function (err, str) {
+            if (err)
+                console.log(err);
+            else
+                console.log(str.split(&#39;\n&#39;).length - 1);
+        });</code></pre>
+<p>Recommended reading: <a href="https://github.com/maxogden/art-of-node#callbacks"><code class="url">https://github.com/maxogden/art-of-node#callbacks</code></a>.</p>
+<h2 id="filtered-ls">Filtered LS</h2>
+<p>This exercise prints a list of the files in a directory filtered by file extension. The directory and extension are passed in on the command line.</p>
+<p>The <code>readdir</code> method expects a callback function so asynchronous i/o is inevitable.</p>
+<pre class="js"><code>    const fs = require(&#39;fs&#39;);
+    const path = require(&#39;path&#39;);
+
+    fs.readdir(process.argv[2],
+        function (err, pathNames) {
+            if (err)
+                console.log(err);
+            else
+                pathNames.forEach(
+                    function(pathName) {
+                        if (path.extname(pathName).slice(1) == process.argv[3])
+                            console.log(pathName);
+                    });
+        });</code></pre>
+<h2 id="make-it-modular">Make It Modular</h2>
+<p>This exercise has a very long description.</p>
+<p>The goal of this exercise is the same as the last one only you are required to bury the hard work in a separate module.</p>
+<p>This is a common programming idiom in <code>node</code> but looks like overkill here: the main routines provides a callback to print the results and passes it to our module that provides a callback to <code>readdir</code>.</p>
+<pre class="js"><code>    const fs = require(&#39;fs&#39;);
+    const path = require(&#39;path&#39;);
+
+    module.exports = function(dir, ext, callback){
+        fs.readdir(dir,
+            function(err, pathNames){
+                if (err)
+                    return callback(err);
+
+                callback(null, pathNames.filter(
+                    function(pathName){
+                        return path.extname(pathName).slice(1) == ext;
+                    })
+                );
+            })
+    }</code></pre>
+<p>and call it from a main routine:</p>
+<pre class="js"><code>    const lsfilter = require(&#39;./lsmodule.js&#39;);
+
+    lsfilter(process.argv[2], process.argv[3],
+        function(err, names){
+            if (err)
+                console.log(err);
+            else
+                names.forEach(
+                    function(name) {
+                        console.log(name);
+                    });
+
+        });</code></pre>
+<h2 id="http-client">HTTP Client</h2>
+<p>This exercise uses HTTP (and the http module). It accepts GET requests and prints the data content of the requests to the console. The source URL is a command line parameter.</p>
+<p>You will not be able to do this without reading some documentation: [https://nodejs.org/api/http.html#http_http_get_options_callback] (https://nodejs.org/api/http.html#http_http_get_options_callback). This is very much reference, not tutorial, documentation.</p>
+<p>The exercise says to use <code>http.get()</code>, which is a simplification. The solution below is a simplification of the example in the reference documentation.</p>
+<pre class="js"><code>    const http = require(&#39;http&#39;);
+
+    http.get(process.argv[2], (response) =&gt; {
+
+        response.setEncoding(&#39;utf8&#39;);
+
+        response.on(&#39;data&#39;, (chunk) =&gt; {
+            console.log(chunk);
+        });
+
+        response.on(&#39;end&#39;, () =&gt; {
+        });
+
+        response.on(&#39;error&#39;, (e) =&gt; {
+            console.error(`Got error: ${e.message}`);
+        });
+    });</code></pre>
+<p>The 'official' answer is yet another simplification:</p>
+<pre class="js"><code>    var http = require(&#39;http&#39;)
+
+    http.get(process.argv[2], function (response) {
+      response.setEncoding(&#39;utf8&#39;)
+      response.on(&#39;data&#39;, console.log)
+      response.on(&#39;error&#39;, console.error)
+    }).on(&#39;error&#39;, console.error)</code></pre>
+<h2 id="http-collect">HTTP Collect</h2>
+<p>This exercise requires an application that will receive a series of GET requests containing data. When the HTTP connection is closed (at the other end), the application must print out the total number of data characters received and the data itself as one long line.</p>
+<p>This can be done by writing code yourself or by using existing modules. It is hinted you should use existing modules and a couple are suggested.</p>
+<p>Here is my solution 'writing code' myself. Big deal. It seems to me that the application is simply a side-effect of the data collection.</p>
+<pre class="js"><code>    const http = require(&#39;http&#39;);
+
+    http.get(process.argv[2], (response) =&gt; {
+        var data = &quot;&quot;;
+
+        response.setEncoding(&#39;utf8&#39;);
+
+        response.on(&#39;data&#39;, (chunk) =&gt; {
+            data += chunk;
+        });
+
+        response.on(&#39;end&#39;, () =&gt; {
+            console.log(data.length);
+            console.log(data);
+        });
+
+        response.on(&#39;err&#39;, (err) =&gt; {
+            console.error(`Got error: ${err.message}`);
+        });
+    });</code></pre>
+<p>I tried but failed to use existing modules. This was probably due to my naïvety and I perhaps ought to try again.</p>
+<p>I tried to install one of the modules referenced but that failed. However, since the module documentation was already installed then perhaps so too was the module. Given how simple the 'application' is, I doubt much of the module's functionality would be required.</p>
+<h2 id="juggling-async">Juggling Async</h2>
+<p>This exercise is an example of concurrency: three instances of the same code dealing with three data sources concurrently.</p>
+<p>The task is the same as for the last exercise except thaT three data sources are passed in as parameters and the GET requests that provide the data from these sources are all mixed up.</p>
+<p>Collect the data from all three and when the very final chunk of data is received only then print out the data received for all three sources in command line parameter order.</p>
+<p>For this exercise it is suggested not using a module will be simpler. They used the bl module but otherwise my answer was similar. My choice of names is not very good.</p>
+<pre class="js"><code>    const http = require(&#39;http&#39;);
+
+    var datalist = [undefined, undefined, undefined];
+    var responsefuse = datalist.length;
+
+    function readStream(url, stream, callback) {
+        http.get(url, (response) =&gt; {
+            var data = &quot;&quot;;
+
+            response.setEncoding(&#39;utf8&#39;);
+
+            response.on(&#39;data&#39;, (chunk) =&gt; {
+                data += chunk;
+            });
+
+            response.on(&#39;end&#39;, () =&gt; {
+                if (saveStream(stream, data))
+                    printStreams();
+            });
+
+            response.on(&#39;err&#39;, (err) =&gt; {
+                console.error(`Got error: ${err.message}`);
+            });
+        });
+    }
+
+    function    saveStream(stream, data) {
+        datalist[stream - 1] = data;
+        responsefuse -= 1;
+
+        return (responsefuse === 0);
+    }
+
+    function    printStreams() {
+        datalist.forEach((data) =&gt; {
+            if (data)
+                console.log(data);
+        });
+    }
+
+    readStream(process.argv[2], 1, printStreams);
+    readStream(process.argv[3], 2, printStreams);
+    readStream(process.argv[4], 3, printStreams);</code></pre>
+<h2 id="time-server">Time Server</h2>
+<p>This is an example of the TCP server that closes the connection after each request. In response to a request, it returns the current date and time (to the nearest minute).</p>
+<p>This uses TCP, not HTTP, so requires a different module. It also needs the built in Data() object and hints at using the <code>strfmt</code> module. At the time I seemed to be unable to install modules so my solution formats the result the hard way.</p>
+<pre class="js"><code>    const net = require(&#39;net&#39;);
+
+    var server = net.createServer( (socket) =&gt; {
+        var now = new Data();
+
+        var str = now.getFullYear() + &#39;-&#39; +
+                (now.getMonth() + 1) + &#39;-&#39; +
+                now.getDate() + &#39; &#39; +
+                now.getHours() + &#39;:&#39; +
+                now.getMinutes() + &#39;\n&#39;;
+
+        socket.end(str);
+    });
+
+    server.listen(process.argv[2]);</code></pre>
+<p>This is technically incorrect as it ought to pad to two digits but I just happened to do this in the afternoon at the end of the year so it quirked. This is why I need the <code>strfmt</code> module.</p>
+<p>Also, the brokenness that stops installation of `npm`` modules also means the CodeAnywhere version will not work but it verifies because the reference is also broken.</p>
+<p>Eureka. I could not install <code>npm</code> modules because I was in the wrong directory (not the 'workspace' directory as the fcc instructions told me to be). It also seems that <code>require</code> does not work unless the source code is also in the 'workspace' directory.</p>
+<p>My solution using the <code>strftime</code> module.</p>
+<pre class="js"><code>    const net = require(&#39;net&#39;);
+    const strftime = require(&#39;strftime&#39;);
+
+    var server = net.createServer( (socket) =&gt; {
+        socket.end(strftime(&quot;%Y-%m-%d %H:%M\n&quot;, new Date()));
+    });
+
+    server.listen(process.argv[2]);</code></pre>
+<h2 id="http-file-server">HTTP File Server</h2>
+<p>This exercise is a simple example of an HTTP file server. It streams a file in response to each request it receives. The file pathname is passed in on the command line.</p>
+<pre class="js"><code>    const fs = require(&#39;fs&#39;);
+    const http = require(&#39;http&#39;);
+
+    var server = http.createServer((request, response) =&gt; {
+        resquest.writeHead(200, {&#39;content-type&#39;: &#39;text/plain&#39; });
+        var stream = fs.createReadStream(process.argv[3]);
+
+        stream.pipe(response);
+    });
+
+    server.listen(Number(process.argv[2]));</code></pre>
+<p>but I did not have the <code>res.writeHead</code> until I saw the solution. I did not explicitly convert the port number.</p>
+<p>I guess the subtleties of request and response headers and data type conversions are beyond the scope of these exercises.</p>
+<p>Under CodeAnywhere this exercise would not work until the timeout in the test client was lengthened.</p>
+<h2 id="http-uppercaserer">HTTP Uppercaserer</h2>
+<p>This exercise is another simple example of an HTTP. It accepts POST requests and returns the data they contain after conversion to upper case.</p>
+<pre class="js"><code>    const http = require(&#39;http&#39;);
+    const map = require(&#39;through2-map&#39;);
+
+    var server = http.createServer((instream, outstream) =&gt; {
+        outstream.writeHead(200, {&#39;content-type&#39;: &#39;text/plain&#39; });
+
+        if (instream.method != &#39;POST&#39;) {
+            return (instream.end(&#39;Send me a POST&#39;));
+        }
+
+        instream.pipe(map((chunk)  =&gt; {
+            return chunk.toString().toUpperCase();
+            })
+        ).pipe(outstream);
+    });
+
+    server.listen(Number(process.argv[2]));</code></pre>
+<p>The uses of <code>through2-map</code> to convert stream data on the fly came from the exercise hints.</p>
+<p>The test for POST came from the 'official' solution.</p>
+<p>Under CodeAnywhere this exercise would not work until the timeout in the test client was lengthened.</p>
+<h2 id="http-json-api-server">HTTP JSON API Server</h2>
+<p>This exercise services HTTP GET requests and returns data in JSON format. It has two 'endpoints'. '/api/parsetime' and '/api/unixtime'. Each request contains a date-time stamp that is converted. The first converts the stamp to hour-minute-second, the second to 'epoch time'.</p>
+<pre class="js"><code>    const http = require(&#39;http&#39;);
+    const url = require(&#39;url&#39;);
+
+    function parsetime(isotime)
+    {
+        var date = new Date(isotime);
+
+        return (JSON.stringify({
+            hour   : date.getHours(),
+            minute : date.getMinutes(),
+            second : date.getSeconds(),
+        }));
+    }
+
+    function unixtime(isotime)
+    {
+        var date = new Date(isotime);
+
+        return (JSON.stringify({
+            unixtime: date.getTime()
+        }));
+    }
+
+    var server = http.createServer((request, response) =&gt; {
+        var json;
+        var parsed = url.parse(request.url, true);
+
+        if (parsed.pathname == &#39;/api/parsetime&#39;)
+            json = parsetime(parsed.query[&#39;iso&#39;]);
+
+        if (parsed.pathname == &#39;/api/unixtime&#39;)
+            json = unixtime(parsed.query[&#39;iso&#39;]);
+
+        if (json) {
+            response.writeHead(200, {&#39;content-type&#39;: &#39;application/json&#39; });
+            response.end(json);
+        }
+        else {
+            response.writeHEAD(404);
+            response.end(&quot;WTF&quot;);
+        }
+    });
+
+    server.listen(Number(process.argv[2]));</code></pre>
+<p>The 404 response came from the 'official' answer.</p>
+<p>Under CodeAnywhere this exercise too would not work until the timeout in the test client was lengthened.</p>
