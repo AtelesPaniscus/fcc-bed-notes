@@ -1,0 +1,160 @@
+<h1 id="build-web-apps-with-express.js">Build Web Apps with Express.js</h1>
+<p>Express.js is a web application framework designed for building web applications and APIs on Node.js. It is relatively minimal with many features available as plugins. It is part of the MEAN stack (Mongo, Express, Angular and Node).</p>
+<p>The fcc waypoint delegates to the Node School <a href="https://github.com/azat-co/expressworks">Express Works</a> tutorial.</p>
+<p>The fcc instructions first suggest reading <a href="http://evanhahn.com/understanding-express/">Understanding Express.js</a>. Read it first and again after completing the challenge.</p>
+<p>You must also install Express.js. You are directed to install an fcc version, which has some unexpected side effects. On Cloud9, I recommend using a 'blank', not a 'node.js' container.</p>
+<p>Remember that in a fresh Cloud9 container you have versions 6.11.2 and 3.10.10 of <code>node</code> and <code>npm</code> ? Remember that in a fresh CodeAnywhere container you have versions 8.4.0 and 5.6.0 ? Well, after installing Express, you will be using 4.1.2 and 2.14.4. So even older.</p>
+<p>To install the fcc version of Express.js:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ git clone https://github.com/FreeCodeCamp/fcc-expressworks.git
+    $ <span class="kw">chmod</span> 744 fcc-expressworks/setup.sh
+    $ fcc-expressworks/setup.sh
+    $ <span class="kw">source</span> ~/.profile</code></pre>
+<p>This also installs the Node School Express Works tutorial.</p>
+<hr />
+<p>The Node School tutorial I enjoyed but, as with others, it barely scratches the surface. It gives a sense of the power of Express.js but what little I learnt was quickly forgotten. The terminology was foreign to me. Reading the references is highly recommended.</p>
+<p>The tutorial has the same naff interface as all the other Node School tutorials. Maximise the small viewing area at the bottom of the Cloud9 virtual desktop before use.</p>
+<p>Each exercise has an 'official' solution: study these as they offer further insight.</p>
+<p>The tutorial has <code>html</code> reference documentation you might find handy. See <a href="Learn%20You%20Node.html">Learn You Node</a> for how you might browse the documentation comfortably.</p>
+<p>To run the tutorial:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ expressworks</code></pre>
+<p>After doing each 'challenge' check your work with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ expressworks verify</code></pre>
+<p>On Cloud9 the choice of colours means you cannot actually see the tutorial instructions. No such problem on CodeAnywhere. So I worked through the tutorial(s) on CodeAnywhere and Cloud9 in parallel.</p>
+<h2 id="hello">Hello</h2>
+<p>This is a simple exercise to to get you started: create an express.js application that outputs &quot;Hello World!&quot; when the client navigates to '/home' (on your imaginary web-site). The port number to use is passed in on the command line.</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+
+    var app = express();
+
+    app.get(&quot;/home&quot;, (request, response) =&gt; {
+        response.writeHead(200, { &quot;Content-Type&quot;: &quot;text/plain&quot; });
+        response.end(&quot;Hello World!&quot;);
+    });
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<h2 id="static">Static</h2>
+<p>This exercise involves the application of static middleware to serve <code>index.html</code> with any route. The number of the port to listen on and the file to serve up are passed in on the command line.</p>
+<p>I have no idea what the exericse description means. I know that <code>express.js</code> uses the term <code>middleware</code> in way that is new to me and the word route is problematic in American-European english.</p>
+<p>I feel this exercise introduces important concepts without any real explanation:</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+    const path = require(&#39;path&#39;);
+
+    var app = express();
+
+    app.use(express.static(process.argv[3]||path.join(__dirname, &#39;public&#39;)));
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<p>What does it do ? Serves up the contents of the file process.argv[3].</p>
+<p>If this isn't given, it uses the right hand side of the ||. This is why you need the second <code>require</code>. <code>__dirname</code> is a <code>node</code> special and means <code>pwd</code>. As it happens 'public' becomes 'run'.</p>
+<h2 id="was-jade-is-now-pug">Was Jade Is Now Pug</h2>
+<p>This exercise creates a home page that is rendered by the Jade template engine. The home page view should show the current date uses <code>toDateString</code>.</p>
+<p>Except the Jade template is defunct and has been renamed to pug. The exercise has not been updated.</p>
+<p>First, you need to install the <code>pug</code> module (ignore any warning messages):</p>
+<pre class="sh"><code>    $ npm install pug</code></pre>
+<p>Second, there are two small changes needed in the solution's code:</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+    const path = require(&#39;path&#39;);
+
+    var app = express();
+
+    app.set(&#39;view engine&#39;, &quot;pug&quot;);
+    app.set(&#39;views&#39;, process.argv[3]||path.join(__dirname, &#39;templates&#39;));
+
+    app.get(&quot;/home&quot;, (request, response) =&gt; {
+        response.render(&quot;index.jade&quot;, {date: new Date().toDateString()});
+    });
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<p>One, change the name passed with <code>'view engine'</code>: this changes the module that is loaded. Two, change the name passed to <code>render()</code> from just plain <em>index</em> to <em>index.jade</em>.</p>
+<p>Presumably, as an alternative, you could have renamed the file on disk from <em>index.jade</em> to <em>index.pug</em>.</p>
+<p>Do not use <code>writeHead()</code> - it will cause the server to crash with a message about too late to set header fields.</p>
+<h2 id="good-old-form">Good Old Form</h2>
+<p>In this exercise you write a route ('/form') that processes an HTML form. Well, at least we now know what a route is.</p>
+<p>The form is:</p>
+<pre class="sourceCode HTML"><code class="sourceCode html">    <span class="kw">&lt;form&gt;&lt;input</span><span class="ot"> name=</span><span class="st">&quot;str&quot;</span><span class="kw">/&gt;&lt;/form&gt;</span></code></pre>
+<p>The exercise requires the <code>str</code> value to be printed backwards.</p>
+<p>According to the hints, <code>middleware</code> is a function invoked by Express.js before it invokes your own request handler. So everything is crystal now.</p>
+<p>The middleware is a module by someone else that we need to install and <code>require</code> in our solution.</p>
+<p>There is the suggestion I read about Connect middleware here:</p>
+<pre><code>    [https://github.com/senchalabs/connect#middleware](https://github.com/senchalabs/connect#middleware)</code></pre>
+<p>and about the body-parser (middleware) module here:</p>
+<pre><code>    [https://github.com/expressjs/body-parser](https://github.com/expressjs/body-parser)</code></pre>
+<p>I have done neither yet.</p>
+<p>The exercise appears to be reverse input text and send it back but the exercise is, of course, about using middleware to parse a request form. I think this pulls apart a very simple POST request so that you do not have to.</p>
+<p>Here is my solution. The correspondence between input and output is unclear:</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+    const bodyparser = require(&#39;body-parser&#39;);
+
+    var app = express();
+
+    app.use(bodyparser.urlencoded({extended: false}));
+
+    app.post(&quot;/form&quot;, (request, response) =&gt; {
+        response.writeHead(200, { &quot;Content-Type&quot;: &quot;text/plain&quot; });
+        response.end(request.body.str.split(&#39;&#39;).reverse().join(&#39;&#39;));
+    });
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<p>The official solution use <code>response.send()</code> and did not bother with the <code>response.writeHead()</code>.</p>
+<h2 id="stylish-css">Stylish CSS</h2>
+<p>This exercise uses the middleware-as-a-preprocessor model to turn an abbreviated, lazy man's, markup into full blown CSS.</p>
+<p>I thought is was generating a CSS style sheet but, in fact, the idea is to pre-process every web page on the given web site. I do not understand the references to static files (but now thinks this means prepared web pages as opposed to those generated on the fly).</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+    const path = require(&#39;path&#39;);
+    const stylus = require(&#39;stylus&#39;);
+
+    var app = express();
+
+    var website = process.argv[3]||path.join(__dirname, &#39;public&#39;);
+
+    app.use(stylus.middleware(website));
+    app.use(express.static(website));
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<p>All the <code>path.join</code> does is insert the operating system directory character.</p>
+<h2 id="param-pam-pam">Param Pam Pam</h2>
+<p>This exercise processes an HTML PUT request, not a POST request. The request has the form 'message/:id'. The response has is a SHA1 of the current date and the id received.</p>
+<p>First install the <code>crypto</code> module. Ignore the warning about it being built in: our node is old.</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+    const crypto = require(&#39;crypto&#39;);
+
+    var app = express();
+
+    app.put(&quot;/message/:id&quot;, (request, response) =&gt; {
+        var id = request.params.id;
+
+        response.writeHead(200, { &quot;Content-Type&quot;: &quot;text/plain&quot; });
+        response.end(crypto.createHash(&#39;sha1&#39;).update(new Date().toDateString() + id).digest(&#39;hex&#39;));
+    });
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<h2 id="whats-in-a-query">What's In a Query</h2>
+<p>This exercise accepts a GET request, extracts (query) data from it and returns it in JSON format.</p>
+<p>Simple enough. I even guessed the JSON part:</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+
+    var app = express();
+
+    app.get(&quot;/search&quot;, (request, response) =&gt; {
+        response.writeHead(200, { &quot;Content-Type&quot;: &quot;application/json&quot; });
+        response.end(JSON.stringify(request.query));
+    });
+
+    app.listen(Number(process.argv[2]));</code></pre>
+<h2 id="json-me">Json Me</h2>
+<p>This exercise reads a file (whose path is passed in on the command line) and outputs the content in JSON format.</p>
+<pre class="js"><code>    const express = require(&#39;express&#39;);
+    const fs = require(&#39;fs&#39;);
+
+    var app = express();
+
+    app.get(&quot;/books&quot;, (request, response) =&gt; {
+        fs.readFile (process.argv[3], &#39;utf8&#39;, (err, str) =&gt; {
+            if (err)
+                response.json(err);
+            else
+                response.json(JSON.parse(str));
+        });
+    });
+
+    app.listen(Number(process.argv[2]));</code></pre>
