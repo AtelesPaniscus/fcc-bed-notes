@@ -1,0 +1,126 @@
+<h1 id="save-code-revisions-in-git">Save Code Revisions in Git</h1>
+<p><code>git</code> is a version control system with good support for distributed non-linear workflows. GitHub is a web-based hosting service for version control using <code>git</code>.</p>
+<p>The fcc waypoint delegates to the Node School <a href="https://github.com/jlord/git-it">Git It</a> tutorial.</p>
+<p>Before you start, it is suggested you add a new <code>ssh</code> key to you account.</p>
+<p>Note: both Cloud9 and CodeAnywhere automatically create containers with an RSA key for use with SSH. By default you get the same RSA key each time you create a container. Whether this is a good idea or not is besides the point: create your container(s) and add their RSA key(s) to GitHub to the purposes of this tutorial (an exercise left to the reader).</p>
+<hr />
+<p>The Node School tutorial covers only a few basics of <code>git</code> and GitHub and briefly at that. However, I was astonished how much new stuff I learnt (some on, some off the curriculum).</p>
+<p>Each exercise has an 'official' solution: study these as they offer further insight.</p>
+<p>The tutorial has <code>html</code> reference documentation you might find handy. See <a href="Learn%20You%20Node.html">Learn You Node</a> for how you might browse the documentation comfortably.</p>
+<p>The tutorial has the same naff interface as all the other Node School tutorials. Maximise the small console viewing area at the bottom of the Cloud9 virtual desktop before use.</p>
+<p>To install the tutorial:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ npm <span class="kw">install</span> -g git-it</code></pre>
+<p>To run it:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ git-it</code></pre>
+<p>After doing each 'challenge' check your work with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ git-it verify</code></pre>
+<p>On Cloud9 the choice of colours means you cannot actually see the tutorial instructions. No such problem on CodeAnywhere. So I worked through the tutorial(s) on CodeAnywhere and Cloud9 in parallel.</p>
+<h2 id="get-git">Get git</h2>
+<p>This section ensures <code>git</code> is installed and your name and e-mail are configured.</p>
+<p>Well, git <code>was</code> already installed. Cloud9 has version 2.14.1 installed and CodeAnywhere only version 1.9.1.</p>
+<p>There is already a good (global) <code>git</code> configuration, but it may not be what you want need:</p>
+<pre class="sh"><code>    $ git config --global -l</code></pre>
+<p>The Cloud 9 configuration was good:</p>
+<pre><code>    user.name=Ateles Paniscus
+    user.email=pbronline-fcc@yahoo.co.uk
+    core.editor=nano
+    core.whitespace=off
+    core.excludesfile=~/.gitignore
+    advice.statusuoption=false
+    color.ui=true
+    push.default=current</code></pre>
+<p>The last entry I have not seen before. It looks useful.</p>
+<p>I have private e-mail restriction in place on GitHub so I needed to set:</p>
+<pre class="sh"><code>    $ git config --global user.email &quot;AtelesPaniscus@user.noreply.github.com&quot;</code></pre>
+<p>before making a first commit.</p>
+<p>The CodeAnywhere configuration was not OK. So I corrected it with the 'usual':</p>
+<pre class="sh"><code>    $ git config --global user.name &quot;Ateles Paniscus&quot;
+    $ git config --global user.email &quot;AtelesPaniscus@user.noreply.github.com&quot;</code></pre>
+<p>Make sure there is no <code>=</code>.</p>
+<h2 id="repository">Repository</h2>
+<p>In this section you create a new (empty and local) repository:</p>
+<pre class="sh"><code>    $ git init gitshop
+    $ cd gitshop</code></pre>
+<p>You need to create an empty directory rather than turn the current directory into a repository otherwise <code>git-it verify</code> will want you to add and commit everything. Note this is not compatible with the fcc directions to 'always' be in your project's &quot;workspace&quot; directory.</p>
+<h2 id="commit-to-it">Commit to it</h2>
+<p>In this section you create a new file and add it to the repository:</p>
+<pre class="sh"><code>    $ cat &gt; candles.txt
+    I want 35mm diameter candles
+    $ git add candles.txt
+    $ git commit -m &quot;My first commit&quot;</code></pre>
+<p>This fails under Cloud9 if you are not using an RSA key because the ssh config file says to use the RSA key:</p>
+<pre class="sh"><code>    $ cd ~/.ssh
+    $ sed -e &#39;s/id_rsa/id_ecdsa/&#39; -i config
+    $ cd -</code></pre>
+<p>and try again.</p>
+<h2 id="githubbin">Githubbin</h2>
+<p>In this section, you create a GitHub account.</p>
+<p>I am already signed up so it was just a case of updating the config:</p>
+<pre class="sh"><code>    $ git config --global user.username &quot;AtelesPaniscus&quot;</code></pre>
+<p>I did not realise there was a difference between <code>user.name</code> and <code>user.username</code> (and I still do not know what that difference is). It seems also there is no (cannot be) a space in the GitHub user name.</p>
+<h2 id="remote-control">Remote Control</h2>
+<p>In this section you create an empty GitHub repository, link it and your 'local' respository and push you 'local' repository to GitHub.</p>
+<p>Create an empty GitHub repository (no README.md or anything).</p>
+<p>GitHub helpfully shows you the URL to use to 'connect' the local and GitHub repositories. Use the 'ssh', not the 'html' URL.</p>
+<pre class="sh"><code>    $ git remote add github git@github.com:AtelesPaniscus/codeanywhere.git</code></pre>
+<p>Oops, if you forgot the e-mail restrictions bit earlier, you may need to 'amend' your local commit(s) before you can push them to GitHub.</p>
+<pre class="sh"><code>    $ git commit --amend --reset-author</code></pre>
+<p>Note: this changes the date too and is one commit at a time.</p>
+<p>To push your local changes up to GitHub.</p>
+<pre class="sh"><code>    git push origin master</code></pre>
+<p>The <code>git-it verify</code> will fail unless the remote is named <code>origin</code>.</p>
+<p>A good idea is:</p>
+<pre class="sh"><code>    $ git config --global push.default current</code></pre>
+<p>Then <code>git push</code> will push the current branch by default rather than master or whatever was indirectly defined using <code>push -u</code>.</p>
+<h2 id="forks-and-clones">Forks and clones</h2>
+<p>In this section you will fork a repository on GitHub and then clone the fork. The result is two copies of your own - one on GitHub and another in your 'workspace'.</p>
+<p>I have plenty of forks on GitHub already so I thought I would just clone it. That does not work: the <code>git-it verify</code> looks for a specific repository of the author's.</p>
+<p>So, read the 'course notes' and try again. First you need to create a fork on GitHub, which can then be cloned:</p>
+<pre class="sh"><code>    $ git clone git@github.com:AtelesPaniscus/patchwork.github
+    $ git remote add upstream git@github.com:jlord/patchwork.git</code></pre>
+<p>only, it claims, you do not have to use <code>upstream</code>. Hmm ...</p>
+<h2 id="branches-are-not-just-for-birds">Branches are not just for birds</h2>
+<p>In this section you create a new branch in the local respository for what will be your contribution to the repository you forked.</p>
+<p>Read the course notes and follow them closely. In particular, use the branch name they suggest.</p>
+<p>So the forked and cloned repository has a main branch named <code>gh_pages</code> because this repository is a static website. As instructed:</p>
+<pre class="sh"><code>    $ git branch add-AtelesPaniscus
+    $ git checkout add-AtelesPaniscus
+
+    $ cd Contributors
+    $ echo add-AtelesPaniscus &gt; add-AtelesPaniscus.txt
+
+    $ git add add-AtelesPaniscus.txt
+    $ git commit -m &quot;add-AtelesPaniscus.txt&quot;</code></pre>
+<p>Only it seems confused between the directories Contributors and contributors and directory depth too.</p>
+<h2 id="its-a-small-world">It's a Small World</h2>
+<p>In this section you add a collaborator to your (forked GitHub) repository.</p>
+<p>This gives them permission to alter your GitHub repository directly,</p>
+<p>This I had not seen before. I guess this is the basis of sharing repositories so that several people can collaborate. In this tutorial the collaborator is a bot, not a human, but that is irrelevant - the named GitHub account is the collaborator.</p>
+<p>The first problem is finding the right page on GitHub. Go to the forked repository's GitHub page. Click on <code>Settings</code> on the right hand side of the menu of which <code>Code</code> is the left-most choice. Select <code>Collaborators</code> from the 'menu' on the left - second one down.</p>
+<p>Alternatively, try this URL:</p>
+<pre><code>    &lt;https://github.com/&lt;user-name&gt;/&lt;repo-name&gt;/settings/collaboration&gt;</code></pre>
+<p>Type in the GitHub user name of your collaborator (<code>reporobot</code>) and click <code>Add</code>.</p>
+<h2 id="pull-never-out-of-date">Pull, Never out of Date</h2>
+<p>In this section you update your local respository that the bot collaborator has made to your (forked) GitHub repository.</p>
+<pre class="sh"><code>    $ git pull origin add-AtelesPaniscus</code></pre>
+<p>This worked under Codeanywhere because it was consistent with the GitHub version. Under Cloud 9, which was not consistent, the 'pull' overwrote the robot's changes with our version and asked us to provide a comment for the merge. In other words it lost the robot's change.</p>
+<p>This may be why I've seen (elsewhere) the use of pull discouraged and the use of fetch + merge encouraged. At least you may get a chance to control the merge.</p>
+<h2 id="requesting-you-pull-please">Requesting you Pull, Please</h2>
+<p>In this section you create a pull request on GitHub.</p>
+<p>This is a purely GitHub step. It is a request to merge the changes on your brach in your fork with the original repository.</p>
+<p>Done. It worked first time.</p>
+<p>Apparently you should be able to launch the pull request from either end.</p>
+<h2 id="merge-ta-da">Merge TA DA !</h2>
+<p>In this section you merge the changes on your branch into the 'main' branch, delete the branch (since it is not needed anymore) and then push these changes to GitHub.</p>
+<p>I've not seen this before but have been told to do this and, of course, my improvisation was something else.</p>
+<pre class="sh"><code>    $ git checkout gh-pages
+    $ git merge add-AtelesPaniscus
+    $ git branch -d add-AtelesPaniscus
+    $ git push origin --delete add-AtelesPaniscus</code></pre>
+<p>and finally:</p>
+<pre class="sh"><code>    $ git pull upstream gh-pages</code></pre>
+<p>This last ensures your local copy is up to date with the original. It may pull down more changes to push to GitHub.</p>
+<p>Apparently if I open the (upstream) GitHub page, I will find my name among the collaborators listed there. Fame at last.</p>
+<!-- EOF -->
+
+
