@@ -1,0 +1,276 @@
+<h1 id="learn-you-mongo">Learn You Mongo</h1>
+<p>MongoDB is a document-oriented database program that uses JSON-like documents with schemas. It classifies as a NoSQL database.</p>
+<p>The fcc waypoint delegates to the Node School <a href="https://github.com/evanlucas/learnyoumongo">Learn You Mongo</a> tutorial.</p>
+<p>On Cloud9, I recommend using a 'blank', not a 'node.js' container.</p>
+<p>As a preliminary, you need to install MongoDB in your container with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ <span class="kw">sudo</span> apt-get <span class="kw">install</span> mongodb-org</code></pre>
+<p>and set up your 'mongod alias' using these <a href="https://community.c9.io/t/setting-up-mongodb/1717">directions</a>:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ <span class="kw">mkdir</span> data
+    $ <span class="kw">echo</span> <span class="st">&#39;mongod --bind_ip=$IP --dbpath=data --nojournal --rest &quot;$@&quot;&#39;</span> <span class="kw">&gt;</span> mongod
+    $ <span class="kw">chmod</span> a+x mongod</code></pre>
+<p>and then always use <code>./mongod</code> instead of <code>.mongod</code>.</p>
+<p>This was fine in the Cloud9 container but did not work under CodeAnywhere.</p>
+<p>The issue is that <code>mongodb</code> is not available from the Ubuntu repositories. The incantation to add the <code>mongodb</code> repository to the CodeAnywhere container is:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ <span class="kw">cat</span> <span class="kw">&gt;</span> mongodb.list
+    deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen
+    $ <span class="kw">sudo</span> <span class="kw">cp</span> -p mongodb.list /etc/apt/sources.list.d/
+    $ <span class="kw">sudo</span> apt-get update</code></pre>
+<p>The 'mongod alias' setup looked OK but $IP was not defined on CodeAnywhere. Fix with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ <span class="kw">export</span> <span class="ot">IP=</span>0.0.0.0</code></pre>
+<hr />
+<p>This Node School tutorial is in serious need of TLC. It uses an out-of-date API and you have to use the resources to guess your way to a working answer. Several of the exercises swallow the Node.js console output so you are programming blind.</p>
+<p>Each exercise has an 'official' solution: study these as they offer further insight.</p>
+<p>The tutorial has <code>html</code> reference documentation (aka resources) you might find handy. See <a href="Learn%20You%20Node.html">Learn You Node</a> for how you might browse the documentation comfortably.</p>
+<p>The tutorial has the same naff interface as all the other Node School tutorials. Maximise the small console viewing area at the bottom of the Cloud9 virtual desktop before use.</p>
+<p>To install the tutorial:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ npm <span class="kw">install</span> -g learnyoumongo</code></pre>
+<p>To run it:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ learnyoumongo</code></pre>
+<p>After doing each 'challenge' check your work with:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ learnyoumongo verify</code></pre>
+<p>This swallows any console log output and so is unsuitable for debugging. Instead try:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ learnyoumongo run.</code></pre>
+<p>which gives you useful debugging output for some exercises.</p>
+<p>On Cloud9 the choice of colours means you cannot actually see the tutorial instructions. No such problem on CodeAnywhere. So I worked through the tutorial(s) on CodeAnywhere and Cloud9 in parallel.</p>
+<h2 id="mongod">Mongod</h2>
+<p>This first exercise simply verifies that mongoDB is installed and available on $PATH.</p>
+<pre class="sh"><code>    $ mongod --version
+    db version v2.6.12</code></pre>
+<h2 id="connect">Connect</h2>
+<p>This exercise starts the mongoDB server (not in the background but in a second terminal window).</p>
+<pre class="sh"><code>    mkdir -p data
+    ./mongod --port 27017</code></pre>
+<p>It then says to install <code>mongodb</code> as a <code>npm</code> package.</p>
+<pre class="sh"><code>    npm init
+    npm install mongodb</code></pre>
+<p>This may seem a bit weird since mongoDB is installed and is up and running. Also, it seems, this is not necessary for the exercise verification to pass. However, this is a <code>node</code> project and <code>package.json</code> needs to know that it uses mongo so do it.</p>
+<h2 id="find">Find</h2>
+<p>Write a <code>node.js</code> program that finds something in a collection and prints the results to the console. The exercise has lots of hints.</p>
+<p>Resources:</p>
+<ul>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#find</li>
+<li>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt</li>
+</ul>
+<p>You may well get this error:</p>
+<pre><code>    db.collection is not a function
+    Cannot read property &#39;parrots&#39; of undefined</code></pre>
+<p>It's all magic, so how the hell are you supposed to debug this ?</p>
+<p>The test actually populates and depopulates the database for you so you can't look around (that is just the kind of thing that will give this error).</p>
+<p>Relax, this isn't your code. See <a href="https://github.com/evanlucas/learnyoumongo/issues/3"><code class="url">https://github.com/evanlucas/learnyoumongo/issues/3</code></a>. Well, the issue has been open for 2½ years so clearly the author, Evan Lucas, knows best. Many suggested solutions are just 'magic' and may have nothing to do with the problem.</p>
+<p>The final comment worked for me: use an older version:</p>
+<pre class="sh"><code>    npm install mongodb@2.2.33</code></pre>
+<p>And start again with the first 'challenge'.</p>
+<p>Oh, and remove the database if the sever crashes rather than trying to recover the database.</p>
+<p>My solution:</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/learnyoumongo&quot;;
+
+    const selectDocs = {age: {$gt : parseInt(process.argv[2], 10)}};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(&#39;parrots&#39;).find(
+            selectDocs).toArray((err, documents) =&gt; {
+                assert.equal(null, err);
+
+                console.log(documents);
+                db.close();
+            });
+    });</code></pre>
+<p>I guess the <code>db.close()</code> needs to be in the inner most asynchronous nest (else, if the server crashes ... you need a new database).</p>
+<p>The 'official' solution can throw an error and so never call <code>db.close()</code>. Hmm ...</p>
+<p>The 'official' solution does not use <code>parseInt()</code> but simple <code>+</code> for force conversion. Yuk.</p>
+<h2 id="find-project">Find Project</h2>
+<p>This exercise is a projection. Yes, the title uses the verb kind of project.</p>
+<p>Resources:</p>
+<ul>
+<li>http://docs.mongodb.org/manual/reference/method/db.collection.find#explicitly-exclude-the-id-field</li>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#find</li>
+</ul>
+<p>The exercise adds one line to the solution to the previous exercise.</p>
+<p>The hint was good but I found the mongo API documentation to be less than what I want.</p>
+<p>My solution:</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/learnyoumongo&quot;;
+
+    const selectDocs = {age: {$gt : parseInt(process.argv[2], 10)}};
+    const projection = {name: 1, age: 1, _id: 0};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(&#39;parrots&#39;).find(
+            selectDocs, projection).toArray((err, documents) =&gt; {
+                assert.equal(null, err);
+
+                console.log(documents);
+                db.close();
+            });
+    });</code></pre>
+<h2 id="insert">Insert</h2>
+<p>This exercise inserts a document into a database collection. The command line is used to pass in the data to be inserted.</p>
+<p>Resources:</p>
+<ul>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#insert</li>
+</ul>
+<p>All the console.log output is swallowed - even for <code>learnyoumongo run</code> - so you are programming totally blind.</p>
+<p>My solution:</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/learnyoumongo&quot;;
+
+    const selectDoc = {firstName : process.argv[2], lastName : process.argv[3]};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(&#39;users&#39;).insertOne(
+            selectDoc, (err, documents) =&gt; {
+                assert.equal(null, err);
+
+                console.log(JSON.stringify(selectDoc));
+                db.close();
+            });
+    });</code></pre>
+<p>It would seem <code>insert</code> is deprecated and one should use <code>insertOne</code> instead.</p>
+<h2 id="update">Update</h2>
+<p>This exercise updates a document in a database collection. The collection name is passed in from the command line.</p>
+<p>Resources:</p>
+<ul>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#update</li>
+<li>http://docs.mongodb.org/manual/tutorial/modify-documents/</li>
+<li>http://docs.mongodb.org/manual/reference/operator/update/set/#set</li>
+</ul>
+<p>My solution:</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/&quot; + process.argv[2];
+
+    const selectDoc = {username : &quot;tinatime&quot;};
+    const updateDoc = {$set: {age : 40}};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(&#39;users&#39;).updateOne(
+            selectDoc, updateDoc, (err, result) =&gt; {
+                assert.equal(null, err);
+
+                db.close();
+            });
+    });</code></pre>
+<p>Initially I built the wrong data URL from the input parameter. I had no idea what was wrong until I tried <code>learnyoumongo run</code></p>
+<h2 id="remove">Remove</h2>
+<p>This exercise removes a document from a database collection using the document's id. The database name, collection name and document id will be passed in on the command line.</p>
+<p>Resources:</p>
+<ul>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#remove</li>
+</ul>
+<p>My solution:</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/&quot; + process.argv[2];
+
+    const selectDoc = {id : process.argv[4]};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(process.argv[3]).delete One(
+            selectDoc, (err, result) =&gt; {
+                assert.equal(null, err);
+
+                db.close();
+            });
+    });</code></pre>
+<p>This worked first time but I used <code>delete One()</code> instead of <code>remove()</code>.</p>
+<h2 id="count">Count</h2>
+<p>This exercise counts the number of documents in a collection that meet a given criterion. The criterion is hard coded but the threshold is passed in from the command line.</p>
+<p>Resources:</p>
+<ul>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#count</li>
+</ul>
+<p>My solution;</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/learnyoumongo&quot;;
+
+    const selectDocs = {age: {$GT : parseInt(process.argv[2], 10)}};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(&#39;parrots&#39;).count(
+            selectDocs, (err, count) =&gt; {
+                assert.equal(null, err);
+
+                console.log(count);
+                db.close();
+            });
+    });</code></pre>
+<h2 id="aggregate">Aggregate</h2>
+<p>This exercise calculates the average price of a book. The database contains a collection ('books') of documents that hold meta-data about real books, including price.</p>
+<p>Resources</p>
+<ul>
+<li>http://docs.mongodb.org/manual/aggregation/</li>
+<li>http://docs.mongodb.org/manual/core/aggregation-introduction/</li>
+<li>http://mongodb.github.io/node-mongodb-native/2.2/api/Collection.html#aggregate</li>
+</ul>
+<p>The exercise is simple but the syntax for aggregates (here $avg) is not so.</p>
+<p>Operators that may be used in the $group stage include:</p>
+<ul>
+<li><code>$avg</code></li>
+<li><code>$first</code></li>
+<li><code>$last</code></li>
+<li><code>$max</code></li>
+<li><code>$min</code></li>
+<li><code>$push</code></li>
+<li><code>$sum</code></li>
+<li><code>$addToSet</code></li>
+</ul>
+<p>My solution:</p>
+<pre class="js"><code>    const mongodb = require(&#39;mongodb&#39;);
+    const assert = require(&#39;assert&#39;);
+
+    const url = &quot;mongodb://localhost:27017/learnyoumongo&quot;;
+
+    const selectDocs = {$match: {size: process.argv[2]}};
+    const aggregateDocs = {$group: {_id: &#39;average&#39;, average: {$avg: &#39;$price&#39;}}};
+
+    var mongo = mongodb.MongoClient;
+
+    mongo.connect(url, (err, db) =&gt; {
+        assert.equal(null, err);
+
+        db.collection(&#39;prices&#39;).aggregate(
+            [selectDocs, aggregateDocs].toArray(), (err, results) =&gt; {
+                assert.equal(null, err);
+
+                console.log(results[0].average.toFixed(2));
+                db.close();
+            });
+    });</code></pre>
+<p>The 'official' solution threw this in for good measure:</p>
+<pre class="sh"><code>    if (!results.length)
+        throw new Error(&#39;No results found&#39;)</code></pre>
