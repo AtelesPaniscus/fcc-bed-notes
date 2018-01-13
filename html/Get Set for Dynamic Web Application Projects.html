@@ -1,0 +1,136 @@
+<h2 id="get-set-for-our-dynamic-web-application-projects">Get Set for Our Dynamic Web Application Projects</h2>
+<p>These are the second block of backend projects. They are also referred to as &quot;Basejump Challenges&quot;.</p>
+<p>fCC recommend using <code>c9/io</code>, aka <code>cloud9</code> aka <code>AWS cloud9</code>.</p>
+<p>fCC also point out that this saves you time since you do not need to install Node.js or MongoDB.</p>
+<p>These notes cover the 'set-up' before attempting any project. Each 'section' below covers a step from the fCC challenge.</p>
+<p>You also get to set up the Clementine framework and MongoDB. The former is an fCC special so may not be much use in the real world. The latter is a 'no SQL', document oriented database manager.</p>
+<h3 id="create-an-account">Create An Account</h3>
+<p>The fCC instruction describe a big GitHub symbol you click to create an account. There is no such button.</p>
+<p>The recommendation on how to start seems dated - basically it thinks all you have to do is authenticate via GitHub and enter an e-mail address.</p>
+<p>This makes sense since you already have a GitHub account if you have done the Front End Development programme.</p>
+<p>However, you should also have a Cloud 9 account, so just log in and move to the next 'step'.</p>
+<h3 id="clementine">Clementine</h3>
+<p>Clementine is fCC's own 'framework', whatever that means. It needs to be installed in a new 'virtual machine' and I expect you'll need a new one for each exercise.</p>
+<p>There is a Clementine tutorial but we skipped that first time around.</p>
+<p>The instructions recommend creating a 'workspace' with a custom stack but this is not an option so I went for the blank template.</p>
+<p>This allows you to paste the URL of a repository to clone in the field named &quot;Clone from Git or Mercurial URL&quot;.</p>
+<p>Paste in the link <a href="https://github.com/johnstonbl01/clementinejs-fcc.git">https://github.com/johnstonbl01/clementinejs-fcc.git</a>.</p>
+<p>So, Clementine.js is now installed.</p>
+<h3 id="hidden-files">Hidden Files</h3>
+<p>Click on the gear icon in the upper right corner of the <strong>file structure</strong>.</p>
+<p>It is not the gear in the upper right corner of the browser window.</p>
+<h3 id="create-a-.env-file">Create a .env file</h3>
+<p>Just a right click to create a new file. But where ?</p>
+<p>I assume the top level of the file structure so the new file ends up next to <code>.gitignore</code>. So click on the project name at the top.</p>
+<h3 id="populate-it">Populate it</h3>
+<p>This was a copy paste - values are entered later:</p>
+<pre><code>    GITHUB_KEY=
+    GITHUB_SECRET=
+    MONGO_URI=mongodb://localhost:27017/clementinejs
+    PORT=8080
+    APP_URL=http://localhost:8080/</code></pre>
+<h3 id="open-the-application">Open the Application</h3>
+<p>This bit took a while.</p>
+<p>The instructions say to open up your application in a preview tab by clicking:</p>
+<pre><code>Window &gt; Share &gt; Application &gt; Open.</code></pre>
+<p>This is out-of-date. There is a <code>Windows &gt; Share</code> but that gets you to a page that suggests the Application is already shared.</p>
+<p>Now what ?</p>
+<p>I clicked on the <code>Application Link</code> to open a new browser tab and got:</p>
+<pre><code>    Welcome to the Cloud9 IDE Application Preview</code></pre>
+<p>The 'correct' alternative is:</p>
+<pre><code>    Tools &gt; Preview &gt; Preview Running Application.</code></pre>
+<p>This appears to take you to the same place but in the preview pane on the current page, not a new page.</p>
+<p>At the top of the preview pane is an address bar and in it the 'URL of your application' that is required by later steps.</p>
+<p>I found the preview pane less useful than the new page.</p>
+<h3 id="register-the-application-with-github">Register the Application with GitHub</h3>
+<p>This step and the next step were a nightmare.</p>
+<p>There is no explanation of what this is for. I think it allows GitHub to be used for log-in to your application using GitHub credentials the same way that it allows log-in to FaceBook without needing separate Facebook credentials.</p>
+<p>Click on the link to unlock this step. This opens a new browser tab/window at <a href="https://github.com/settings/applications/new">https://github.com/settings/applications/new</a>. It is not obvious how to to find this page using just the GitHub UI.</p>
+<p>Essentially:</p>
+<ul>
+<li>select <code>Settings</code> (drop down from your avatar - top, far right, any page)</li>
+<li>click on <code>Developer settings</code> (bottom left)</li>
+<li>click on <code>New OAuthApp</code> (top right)</li>
+</ul>
+<p>This gives you a form that requires four pieces of data:</p>
+<ul>
+<li>Application name
+<ul>
+<li><em>Something users will recognize and trust</em></li>
+<li><code>fcc-aspen</code> (the name of the container)</li>
+</ul></li>
+<li>Homepage URL
+<ul>
+<li><em>The full URL to your application homepage</em></li>
+<li><code>https://fcc-aspen-atelespaniscus.c9users.io/</code></li>
+</ul></li>
+<li>Application description
+<ul>
+<li><em>This is displayed to all users of your application</em></li>
+<li>First steps with Dynamic Web Applications</li>
+</ul></li>
+<li>Authorization callback URL
+<ul>
+<li>_Your application's callback URL. Read our OAuth documentation for more information.</li>
+<li><code>https://fcc-aspen-atelespaniscus.c9users.io/auth/github/callback</code></li>
+</ul></li>
+</ul>
+<p>I later read GitHub's OAuth documentation: it made no sense.</p>
+<p>For the callback URL, use just your application's URL: <strong>do not add <code>/auth/github/callback</code></strong>.</p>
+<p>After clicking on the 'Register Application' button you are presented with a page that has an <code>Update application</code> button at the bottom. I do not think this is pertinent unless you change the application name or something.</p>
+<p>What you want, for the next step, is the Client ID and Secret shown near the top of the page.</p>
+<p>My first attempt (on <em>aspen</em>) was a screw up and I was unable to log in with the Client ID and Secret. My application was not listed on the <code>Authorized OAuth Apps</code> tab of <a href="https://github.com/settings/applications/">https://github.com/settings/applications/</a> but was listed on <a href="https://github.com/settings/developers">https://github.com/settings/developers</a>.</p>
+<p>It seemed GitHub had got its knickers in a twist. Nothing I did seemed to change this and eventually I deleted everything (including the Cloud9) container and started again with <strong>different</strong> names.</p>
+<p>My second attempt (on <em>maple</em>) was more successful and I was able to log on to the base Clementine application but I could not get that far using the 'preview pane': only by opening my application in a new browser tab.</p>
+<p>My third attempt (back on <em>aspen</em>) was even more successful in that I did manage to login in from the 'preview pane' although only after doing it successfully using the new browser tab route.</p>
+<p>I recommend:</p>
+<ul>
+<li>double and treble checking everything <strong>before</strong> you enter it for the first time;</li>
+<li>be especially careful with the contents of <code>.env</code>;</li>
+<li>consider logging in through the <code>preview pane</code> a bonus;</li>
+<li>if you cannot log on using the new browser tab route just start again from scratch.</li>
+</ul>
+<h3 id="github-client-id-and-secret">GitHub Client Id and Secret</h3>
+<p>GitHub has now registered your application and presents you with a Client ID and a Client Secret to be used to gain access to GitHub.</p>
+<p>Set your <code>.env</code> file's GITHUB_KEY and GITHUB_SECRET to the Client ID and Client Secret. Also copy/paste the URL of your preview tab into your <code>.env</code> file.</p>
+<pre><code>    APP_URL=https://fcc-aspen-atelespaniscus.c9users.io
+    GITHUB_KEY=03f87679a64517d0bf61
+    GITHUB_SECRET=66725a306cd0591623a1f822f844282bcbec8b16
+    MONGO_URI=mongodb://localhost:27017/clementinejs
+    PORT=8080</code></pre>
+<h3 id="start-mongodb">Start MongoDB</h3>
+<p>Maximise your Cloud9 terminal window (the one at the bottom of the screen) or open a new terminal in a new tab (the + button above your terminal). If you don't, the MongoDB installation will skip something that might be important.</p>
+<p>Install MongoDB by entering:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    <span class="kw">sudo</span> apt-get <span class="kw">install</span> mongodb-org</code></pre>
+<p>then start MongoDB by entering:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    mongod --smallfiles</code></pre>
+<h3 id="upgrade-node.js-packages">Upgrade ? Node.js Packages</h3>
+<p>Open a new terminal in a new tab and run:</p>
+<pre><code>    npm install</code></pre>
+<p>I think this ensures your Node.js packages are up to date.</p>
+<h3 id="start-your-node.js-server-and-authorise-with-github">Start Your Node.js Server and Authorise with GitHub</h3>
+<p>I think I tried clicking the <code>Run</code> button but this failed. Apparently <code>.env</code> was not found - perhaps the button was looking in the wrong directory.</p>
+<p>In the same terminal windows, run:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    node server.js</code></pre>
+<p>to start the server. This appears to work.</p>
+<p>The instructions now say to refresh your preview tab and you should see the Clementine.js logo.</p>
+<p>This did not work until I allowed NoScript to allow <code>c9users.io</code> and clicked on the &quot;Enter Application&quot; button again.</p>
+<p>Now the Clementine.js logo was visible.</p>
+<p>The instructions say click on the &quot;Login with GitHub&quot; button.</p>
+<p>Authorisation failed.</p>
+<p>A lot of time was spent confirming that the Authorization callback URL given to GitHib should be just the Application URL <strong>without</strong> the <code>/auth/github/callback</code> that is described in the documentation. However, that was not sufficient to save the day.</p>
+<h3 id="explore-the-application">Explore the application</h3>
+<p>This is simple ...</p>
+<p>Click the &quot;Click Me&quot; button and you'll see that it increments the number clicks.</p>
+<p>Click the profile button and you'll see that it has your GitHub information.</p>
+<h3 id="create-new-repository">Create New Repository</h3>
+<p>The last step creates a GitHub repository for your code.</p>
+<p>In another browser tab, create a new GitHub repository. Copy its .git URL.</p>
+<p>Back on the Cloud9 browser tab ... in the terminal window tab ... set the GitHub remote URL:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    git remote set-url github <span class="kw">&lt;</span>URL<span class="kw">&gt;</span></code></pre>
+<p>by pasting in the copied URL.</p>
+<p>Check this is OK by pushing your work:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    git push github master</code></pre>
+<p>This works if you are using the default RSA key because, it seems, it is the same for all your containers.</p>
+<p>If you are using something non-default, you either need to tar up you key from another container and untar it again here or perhaps create a whole new key and add it to GitHub.</p>
+<p>Now go back to your GitHub browser tab and refresh. You should now see you code in GitHub.</p>
