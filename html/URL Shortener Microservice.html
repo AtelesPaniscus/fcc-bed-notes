@@ -1,0 +1,96 @@
+<h1 id="url-shortener-microservice">URL Shortener Microservice</h1>
+<p>This is the third of five microservice projects.</p>
+<p>It is a slightly more complex microservice that redirects by replacing 'short' URLs with 'real' URLs using a MongoDB to store the short-to-real relationship. I allowed three days for this project.</p>
+<p>For the fCC instructions see <a href="https://www.freecodecamp.org/challenges/url-shortener-microservice"><code class="url">https://www.freecodecamp.org/challenges/url-shortener-microservice</code></a>. They recommend using a MongoDB database.</p>
+<p>Step 1 of the instructions reference an example application. This helps visualise the otherwise abstract problem and clarifies how to implement the user stories.</p>
+<p>Step 4 of the instructions references <a href="http://www.example.com"><code class="url">http://www.example.com</code></a> but I am not sure what this is supposed to achieve.</p>
+<p>Step 7 of the instructions references a wiki page &quot;Guide for using MongoDB and deploying to Heroku&quot; (from 2016). The examples uses <code>mlab</code> for the database but says that you do not have to. It is worth a read.</p>
+<h2 id="set-up---my-way">Set Up - My Way</h2>
+<p>I cloned and renamed my version of the simple fCC boilerplate repository.</p>
+<p>I created an empty GutHub repository of the same name. I set it up as the remote of my local repository and pushed it to GitHub.</p>
+<p>I kept the clone since local editing of README.md and other boilerplate files is less painful than using the <code>glitch</code> editor.</p>
+<p>I imported (cloned) the new GitHub repository into a <code>glitch</code> project and renamed it (with less of a struggle), set the description, copied the project URL to the GitHub repository meta-data and pinned the project in <code>glitch</code>.</p>
+<h2 id="the-application">The Application</h2>
+<p>I did this over three days. Someone who knows what they are doing should not require more than one.</p>
+<p>My solution was one file (<code>server.js</code>) that comprises some 150 lines of code that included 3 database access routines and 4 application routines. The database access is asynchronous and so 3 of the application routines were callback routines.</p>
+<h3 id="day-1">Day 1</h3>
+<p>The goal was a complete application except for the (crucial) MongoDB database bit.</p>
+<p>The cloned repository has a complete set of files and I rewrote/edited these to suit using previous exercises as a guide:</p>
+<ul>
+<li>LICENCE.md (new but only a one line change from the previous exercise)</li>
+<li>README.md (rewrite)</li>
+<li>views/index.html (rewrite)</li>
+<li>public/style.css (unchanged)</li>
+<li>package.json (lost a lost of time with a stray comma)</li>
+<li>server.js (adapted)</li>
+</ul>
+<p>At the end of play, I had the URL 'routes' defined with a stock (error) response. No validation of input.</p>
+<p>Yes, I did bang my ahead against brick walls and some I had banged my head against before.</p>
+<h3 id="day-2">Day 2</h3>
+<p>The goal was a complete application using a local (not an <code>mlab</code>) MongoDB.</p>
+<p>First the real JavaScript bits:</p>
+<ul>
+<li>syntax validation of the URL entered by the user</li>
+<li>reverse function calls in preparation for asynchronous operation</li>
+<li>in-memory database using an 'array' of 'objects'
+<ul>
+<li>problems 'inserting' new values (see below)</li>
+</ul></li>
+<li>added URL redirection - this turned out to be simple</li>
+</ul>
+<p>The version of <code>npm</code> used by <code>glitch</code> is 3.10.10. To validate the URL I needed:</p>
+<pre class="js"><code>    $ npm install --save valid-url</code></pre>
+<p>The problems inserting new values was really my mistake. I confused the JavaScript <code>object</code> syntax with the Python <code>dict</code> syntax. I could not take the length of an object so I turned it into an array of objects and then could not enumerate what I thought were the keys of a dictionary. I found and tried the <code>dict</code> in Collections.js but failed to get that to work. I may have been trying to use to iterators the wrong way. I found and tried the built-in Map type but failed to get that to work too. Perhaps it requires a more recent version of something or other.</p>
+<p>So I went back to JavaScript arrays and learnt how to use iterators to process an array. This taught me to use <code>concat</code> to add to an array.</p>
+<p>The second part involved conversion to use MongoDB the database:</p>
+<ul>
+<li>install mongoDB - it is already installed - version 2.6.10</li>
+<li>install the <code>npm</code> mongo package - also known as the driver - version 3.0.3.</li>
+<li>rewrite code to use mongoDB
+<ul>
+<li>a collection is created the first time it is referenced so no work there</li>
+<li>TypeError: db.collection is not a function
+<ul>
+<li>an extra level of indirection was required</li>
+<li>see below</li>
+</ul></li>
+</ul></li>
+<li>needed to rearrange code for callbacks again - a fair bit of work</li>
+<li>needed recursion 'cos I'm using random numbers - not finished</li>
+</ul>
+<p>Set up for mongoDB:</p>
+<pre><code>$ cat &gt; mongod
+mkdir -p data
+export IP=0.0.0.0
+mongod --bind_ip=$IP --dbpath=data --nojournal --rest &quot;$@&quot;&#39;
+$ chmod a+x mongod</code></pre>
+<p>The <code>TypeError</code> was a version problem. See <a href="https://stackoverflow.com/questions/43779323/typeerror-db-collection-is-not-a-function"><code class="url">https://stackoverflow.com/questions/43779323/typeerror-db-collection-is-not-a-function</code></a>. The version problem was not in MongoDB but in the Node.js interface package. Rather than downgrade the package, I changed my source code. It was simple enough to implement. See the second (it may have moved) of the suggested 'answers'.</p>
+<h3 id="day-3">Day 3</h3>
+<p>I finished off the JavaScript and tidied up.</p>
+<p>The main exercise for the day was to convert to using an <code>mlab</code> database.</p>
+<ul>
+<li>use MONGO_URI and the .env file - note .env not commited to the repository</li>
+<li>create mlab database - simple
+<ul>
+<li>Plan Type - Sandbox</li>
+<li>Cloud Provider - AWS</li>
+<li>Region - Europe (ew-west-1)</li>
+<li>Storage - 0.5 GB</li>
+<li>Mongodb - 3.4.13 (MMAPv1)</li>
+<li>Database Name - <code>shorturls</code></li>
+</ul></li>
+<li>have to set a user id and password
+<ul>
+<li>not good practice to write them down or store them in a repository</li>
+<li>looks like you can look up the user name but not the password on <code>mlab</code></li>
+</ul></li>
+<li>change the URI in .env:
+<ul>
+<li>mongodb://<user-name>:<password>@ds255768.mlab.com:55768/shorturls</li>
+</ul></li>
+<li>done</li>
+</ul>
+<h2 id="at-the-end">At the End</h2>
+<p>I needed to delete the local mongo database directory.</p>
+<p>I used the <code>Export to GitHub</code> option in <code>glitch</code> to <code>push</code> the final project back to my GitHub repository. In GitHub I generated a pull request, merged it and then deleted the <code>glitch</code> branch.</p>
+<p>I actually exported from <code>glitch</code> twice before accepting the pull request.</p>
