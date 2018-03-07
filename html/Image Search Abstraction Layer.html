@@ -1,0 +1,131 @@
+<h1 id="image-search-abstraction-layer">Image Search Abstraction Layer</h1>
+<p>This is the fourth of five microservice projects.</p>
+<p>It is of similar complexity to the last project but it requires a static lookup database. The instructions did not provide one I could use so I tried to invent one myself.</p>
+<p>I allowed three days for this project with the possibility of a fourth in order to provision by own database.</p>
+<p>For the fCC instructions see <a href="https://www.freecodecamp.org/challenges/image-search-abstraction-layer"><code class="url">https://www.freecodecamp.org/challenges/image-search-abstraction-layer</code></a>.</p>
+<p>It is rather unclear what the <code>?offset=nn</code> required by one of the use cases is supposed to do. The best interpretation is that it means do not display the first <em>nn</em> 'documents' retrieved.</p>
+<p>The example solution output JSON with no pretty printing. The solution in the video used pretty printing and the thumbnail URL was actually an valid HTML link. Neat but not part of a User Story (as far as I can tell - my simple attempts to mimic this behaviour failed).</p>
+<p>The current User Stories appear to be simpler than those inferred from the example solution and the video.</p>
+<h2 id="the-images">The Images</h2>
+<p>The exercise (examples) used a database of images.</p>
+<p>It would have help had the instruction said to clone some existing database but it did not.</p>
+<p>One of the example solutions appeared to provide a UI for uploading (or perhaps just registering) images. How tedious. The instructions (in the accompanying video) suggested I look at how this upload worked. It used AJAX to pass the images off to some server script that presumably extracted meta-data from the image url. I don't know.</p>
+<p>I decided to do my own database of images. Subject primates, source Wikipedia. It was a challenge to come up with a subject 'large' enough to be realistic, but not so large as to be 'impractical' for this exercise. There are more primates than I realised. I would have been better off with wild cats.</p>
+<h2 id="set-up---my-way">Set Up - My Way</h2>
+<p>I created an empty GitHub repository named <code>fcc-image-search-microservice</code>.</p>
+<p>I made a copy of my local fCC boilerplate repository, renamed the remote URL and pushed:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ <span class="kw">cp</span> -pR fcc-boilerplate/ fcc-image-search-microservice
+    $ <span class="kw">cd</span> fcc-image-search-microservice
+    $ git remote set-url github git@github.com:AtelesPaniscus/fcc-image-search-microservice.git
+    $ git push github</code></pre>
+<p>That should be all that is needed here. I kept the clone since local editing of README.md and other boilerplate files is less painful than using the <code>glitch</code> editor.</p>
+<p>I imported (cloned) the new GitHub repository into a <code>glitch</code> project, renamed the <code>glitch</code> project and gave it a description. I copied the <code>glitch</code> project URL to the GitHub repository meta-data and pinned the project in <code>glitch</code>.</p>
+<p>I logged into <code>mlab</code> and created a new MongoDB for deployment purposes:</p>
+<ul>
+<li>Plan Type - Sandbox</li>
+<li>Cloud Provider - AWS</li>
+<li>Region - Europe (ew-west-1)</li>
+<li>Storage - 0.5 GB</li>
+<li>Mongodb - 3.4.13 (MMAPv1)</li>
+<li>Database Name - <code>fcc-microservice-4</code>
+<ul>
+<li>could not have my preferred name</li>
+</ul></li>
+<li>have to set a user id and password</li>
+</ul>
+<p>In the glitch project's <code>.env</code> file:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">  <span class="ot">MONGO_URI=</span>mongodb://<span class="kw">&lt;</span>user-name<span class="kw">&gt;:&lt;</span>password<span class="kw">&gt;</span>@ds261128.mlab.com:61128/fcc-microservice-4</code></pre>
+<p>Note: later fannying about changed this to:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">  <span class="ot">MONGO_URI=</span>mongodb://<span class="kw">&lt;</span>user-name<span class="kw">&gt;:&lt;</span>password<span class="kw">&gt;</span>@ds111319.mlab.com:11319/fccimagesearch</code></pre>
+<p>I also set up a local MondoDB for development purposes. Open the <code>glitch</code> console:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ npm <span class="kw">install</span> --save mongodb;
+    $ <span class="kw">cat</span> <span class="kw">&gt;</span> mongod
+    <span class="kw">mkdir</span> -p data;
+    mongod --dbpath=data --nojournal --rest <span class="st">&quot;</span><span class="ot">$@</span><span class="st">&quot;</span>;
+    $ <span class="kw">chmod</span> a+x mongod</code></pre>
+<p>With 'recent' mongoDB versions, the fanning around the a bind address of 0.0.0.0 is not necessary. It even tells you so.</p>
+<p>In the glitch project's <code>.env</code> file:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    <span class="ot">MONGO_URI=</span>mongodb://localhost:27017/fcc-microservice-4</code></pre>
+<h2 id="the-application">The Application</h2>
+<p>The application comprises <code>server.js</code> - the microservice - and <code>loaddatabase.js</code> - the standalone database loader.</p>
+<p>The loader itself is 17 lines of JavaScript plus a little boilerplate. The bulk of the file is the hard coded array of primates that is loaded into the database.</p>
+<p>The server application (<code>server.js</code>) comprises some 135 lines of code that include 2 database access routines and 2 callback routines. Half the application is boilerplate.</p>
+<h3 id="day-1">Day 1</h3>
+<p>On Day 1 I did the setup and the first pass adaptation of:</p>
+<ul>
+<li>README.md and LICENCE.md</li>
+<li>index.html and style.css</li>
+<li>package.json and server.js</li>
+</ul>
+<p>All that was done with <code>server.js</code> was ensure that the correct URL 'routes' (paths) are recognised (there are only two).</p>
+<h3 id="day-2">Day 2</h3>
+<h4 id="the-database-loader">The Database Loader</h4>
+<p>I implemented a static database loader in <code>loaddatabase.js</code>. There was some trouble with duplicate keys solved by reordering the code - a race condition perhaps ?</p>
+<p>After updating the <code>scripts</code> section of <code>package.json</code> to:</p>
+<pre class="sourceCode json"><code class="sourceCode json">  <span class="er">&quot;scripts&quot;:</span> {
+    <span class="dt">&quot;start&quot;</span>: <span class="st">&quot;node server.js&quot;</span>,
+    <span class="dt">&quot;load&quot;</span>: <span class="st">&quot;node loaddatabase.js&quot;</span>
+  }<span class="er">,</span></code></pre>
+<p>The database could be loaded with either:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ node loaddatabase.js
+    $ npm run load</code></pre>
+<p>The loader itself is trivial and probably could be done using the mongo shell. It ought to read a file containing the JSON to load but I've been lazy and 'hard coded' the JSON into the loader instead of a separate file.</p>
+<h4 id="the-server">The Server</h4>
+<p>This was built up in stages.</p>
+<p>First a dummy query was implemented that update the query log and a first pass 'print the log' function was implemented.</p>
+<p>Next a retrieve function was added to the dummy query: it was able to filter on just one keyword.</p>
+<p>There was an issue creating 'find projections': the old syntax used in the 'tutorial' challenges from Node School did not work. It looked compatible with the MondoDB documentation but not with the <code>npm mongo</code> package.</p>
+<p>Where previously one might write:</p>
+<pre class="js"><code>    find(query,projection)</code></pre>
+<p>you now need to write:</p>
+<pre class="js"><code>    find(query).project(projection)</code></pre>
+<p>Most of the improvements to my server application were actually simple manipulation of the database retrievals before conversion to a JavaScript array:</p>
+<ul>
+<li>project(projection) to limit the fields retrieved</li>
+<li>sort(new2old) to get the log entries ordered from newest to oldest</li>
+<li>skip(offset) to implement the <code>?offset=</code> user story</li>
+<li>limit(10) to retrict the number of documents displayed</li>
+</ul>
+<p>The log was improved: store the current date/time stamp as a UNIX epoch number and, after retrieval but before sending the response, convert the epoch number into a human readable string using a JavaScript equivalent to <code>foreach</code>.</p>
+<p>A similar mechansim was tried as a way of converting URLs to hyperlinks but that failed.</p>
+<p>Retieval of images using one of several keywords proved simple: if the document field is an array, then MongoDB will retrieve all documents for which at least one array element meets the criterion.</p>
+<h3 id="day-3">Day 3</h3>
+<p>The final day should have seen a simple migration of the database to <code>mlab</code> and the addition of more 'documents' to the 'primates' collection but I was a little bit behind with the coding and then it all went pear shaped anyway.</p>
+<p>The database loader evolved to:</p>
+<ul>
+<li>drop the primates collection to avoid duplicates;</li>
+<li>ignore the error that occurs if the collection does not exist.</li>
+</ul>
+<p>A pretty print was added with a global:</p>
+<pre class="js"><code>    app.set(&#39;json spaces&#39;, 2);</code></pre>
+<p>and returning JSON responses with just:</p>
+<pre class="js"><code>   response.json(docs);</code></pre>
+<p>It all went pear shaped when I tried to switch to a database hosted on <code>mlab</code>.</p>
+<h2 id="trouble-with-mlab">Trouble with mlab</h2>
+<p>To use the database loader with <code>mlab</code> you need to ensure the environment is correct:</p>
+<pre class="sh"><code>    $source .env</code></pre>
+<p>I found that both loader and server failed to authenticate with <code>mlab</code>.</p>
+<p>I had done the same as for the last project so what could be wrong ? Password ? I deleted the existing user and tried again.</p>
+<p>I retried this and then that until I had actually started again from scratch with a new database and no dashes with time. Still no joy.</p>
+<p>After wasting hours I tried the Internet. There was not a lot of pertinent information. What there was suggest a version compatibility issue. This was the opinion of someone who had been onto support at <code>mlab</code>.</p>
+<p>It seems corporate users wanted more security so <code>mlab</code> moved up to MongoDB 3.x.x with more secure authentication but which is not backwards compatible with MongoDb 2.x.x, which is what <code>glitch</code> provides by default.</p>
+<p>I did the research to find out how to update to MongoDB 3.x.x. Fine. Well within my confort zone:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    <span class="kw">sudo</span> apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+    <span class="kw">echo</span> <span class="st">&quot;deb http://repo.mongodb.org/apt/ubuntu &quot;</span><span class="ot">$(</span>lsb_release -sc<span class="ot">)</span><span class="st">&quot;/mongodb-org/3.0 multiverse&quot;</span> <span class="kw">|</span> <span class="kw">sudo</span> <span class="kw">tee</span> /etc/apt/sources.list.d/mongodb-org-3.0.list
+    <span class="kw">sudo</span> apt-get update
+    <span class="kw">sudo</span> apt-get <span class="kw">install</span> -y mongodb-org</code></pre>
+<p>This does not work: <code>lsb_release</code> is not known. Never mind, use the string <code>xenial</code>.</p>
+<p>This does not work: no write access to <code>/etc/apt/sources.list.d/</code> and no <code>sudo</code>.</p>
+<h2 id="the-fudge">The Fudge</h2>
+<p>Now, the reason for using something like <code>glitch</code> is so that the good folks at fCC can review my solution: no matter when, <code>glitch</code> will spin up my container and start my server application.</p>
+<p>The reason for using something like <code>mlab</code> is so that the same happens for the database.</p>
+<p>If I can use <code>package.json</code> to run a shell script that starts my server application instead of starting my server application directly, then that shell script should also be able to start a local mongo server so that I don't need <code>mlab</code>.</p>
+<p>This does the trick. Here is the full fudge:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    <span class="kw">killall</span> mongod
+    ./mongod <span class="kw">&gt;</span> /dev/null <span class="kw">&amp;</span>
+    node loaddatabase.js
+    node server.js</code></pre>
+<p>It is simple and crude but does the job and I do not want to spend more time 'improving' it.</p>
+<h2 id="at-the-end">At the End</h2>
+<p>I did not delete the local mongo database directory but the fudge means that is by-the-bye.</p>
+<p>I used the <code>Export to GitHub</code> option in <code>glitch</code> to <code>push</code> the final project back to my GitHub repository. In GitHub I generated a pull request, merged it and then deleted the <code>glitch</code> branch.</p>
