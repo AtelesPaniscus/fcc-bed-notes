@@ -1,0 +1,37 @@
+<h1 id="timestamp-microservice">Timestamp Microservice</h1>
+<p>This is the fifth and last microservice project.</p>
+<p>It is another simple microservice that involves uploading a file and returning the number of bytes in the file. It was done in a single day.</p>
+<p>It does not require MongoDB. Instead it involves using a third party 'middelware' package to handle the upload. The instructions suggest using <a href="https://www.npmjs.com/package/multer"><code class="url">https://www.npmjs.com/package/multer</code></a></p>
+<p>There seems to be little ambiguity in the instructions. The user story is trivial so this project is about using the middleware. A small frontend form is required but it is suggested you don't spend time making this look pretty.</p>
+<h2 id="set-up---my-way">Set Up - My Way</h2>
+<p>I created an empty GutHub repository named <code>fcc-file-metadata-microservice</code>.</p>
+<p>I made a copy of my local fCC boilerplate repository, renamed the remote URL and pushed:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">    $ <span class="kw">cp</span> -pR fcc-boilerplate/ fcc-file-metadata-microservice
+    $ <span class="kw">cd</span> fcc-file-metadata-microservice
+    $ git remote set-url github git@github.com:AtelesPaniscus/fcc-file-metadata-microservice.git
+    $ git push github</code></pre>
+<p>I kept the clone since local editing of README.md and other boilerplate files is less painful than using the <code>glitch</code> editor.</p>
+<p>I imported (cloned) the new GitHub repository into a <code>glitch</code> project, renamed the <code>glitch</code> project and gave it a description. I copied the <code>glitch</code> project URL to the GitHub repository meta-data and pinned the project in <code>glitch</code>.</p>
+<h2 id="the-application">The Application</h2>
+<p>I did the setup and the first pass adaptation of:</p>
+<ul>
+<li>README.md and LICENCE.md</li>
+<li>index.html and style.css</li>
+<li>package.json and server.js</li>
+</ul>
+<p>A study of the (brief) <code>multer</code> documentation suggest a successful solution would be simple but, for a novice, I felt the documentation was assuming too much prior knowledge.</p>
+<p>I groped my way to a working solution, changing a little bit here and a little bit there. The final hurdle requred recourse to this article: <a href="https://stackoverflow.com/questions/31530200/node-multer-unexpected-field"><code class="url">https://stackoverflow.com/questions/31530200/node-multer-unexpected-field</code></a>. In order to understand a crash that begins with:</p>
+<pre><code>    Error: Unexpected field
+        at makeError (/app/node_modules/multer/lib/make-error.js:12:13)</code></pre>
+<p>Essentially, if in the front end <code>html</code> you have:</p>
+<pre class="sourceCode html"><code class="sourceCode html">    <span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">&quot;file&quot;</span><span class="ot"> value=</span><span class="st">&quot;Browse...&quot;</span><span class="ot"> name=</span><span class="st">&quot;AtelesPaniscus&quot;</span><span class="kw">&gt;</span></code></pre>
+<p>then somewhere in your application you need:</p>
+<pre class="js"><code>    upload.single(&#39;AtelesPaniscus&#39;),</code></pre>
+<p>There was nothing in the (simple) <code>multer</code> documentation to indicate a need for names to correspond.</p>
+<p>I followed the multer examples and coded:</p>
+<pre class="js"><code>    var upload = multer({ dest: &#39;uploads/&#39; });</code></pre>
+<p>but this meant each file tht was uploaded was stored in my <code>glitch</code> project. Oops. For this project, this is better:</p>
+<pre class="js"><code>    var upload = multer();</code></pre>
+<p>My solution was one source file (<code>server.js</code>) that comprised 31 lines of code. The 'application' was a mere 6 lines.</p>
+<h2 id="at-the-end">At the End</h2>
+<p>I used the <code>Export to GitHub</code> option in <code>glitch</code> to <code>push</code> the final project back to my GitHub repository. In GitHub I generated a pull request, merged it and then deleted the <code>glitch</code> branch.</p>
